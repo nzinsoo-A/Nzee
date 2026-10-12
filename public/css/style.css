@@ -502,19 +502,13 @@ textarea {
 
 .facts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-top: 30px;
 }
 
-@media (max-width: 639px) {
-  .facts {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .fact.is-wide {
-    grid-column: 1 / -1;
-  }
+.fact.is-wide {
+  grid-column: 1 / -1;
 }
 
 .fact {
