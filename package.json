@@ -1,0 +1,26 @@
+{
+  "name": "lotteria-zampette",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sito per la vendita dei biglietti di una lotteria di beneficenza (numeri 801-900) con dashboard amministratore.",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test test/store.test.js test/mailer.test.js test/api.test.js",
+    "test:e2e": "node --test test/e2e.js"
+  },
+  "dependencies": {
+    "hono": "^4.13.13",
+    "worker-mailer": "^1.2.1"
+  },
+  "devDependencies": {
+    "mailparser": "^3.9.38",
+    "playwright-core": "1.56.1",
+    "smtp-server": "^3.19.21",
+    "wrangler": "^4.149.0"
+  },
+  "engines": {
+    "node": ">=22.13"
+  }
+}

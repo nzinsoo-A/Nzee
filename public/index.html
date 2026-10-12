@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Lotteria di beneficenza 🐾 Scegli il tuo numero</title>
+    <meta
+      name="description"
+      content="Lotteria di beneficenza per i nostri amici a quattro zampe: scegli il tuo numero fortunato, paga con bonifico e ricevi la conferma via email."
+    />
+    <meta name="theme-color" content="#f0568f" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Lotteria di beneficenza 🐾 Scegli il tuo numero" />
+    <meta
+      property="og:description"
+      content="Un biglietto, mille code felici: scegli il tuo numero e aiutaci a prenderci cura dei nostri amici a quattro zampe."
+    />
+    <meta property="og:image" content="/img/og.png" />
+    <link rel="icon" href="/img/paw.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/fredoka.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/nunito.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/css/style.css" />
+    <script type="module" src="/js/home.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/">
+          <svg class="brand-logo" aria-hidden="true"><use href="/img/icons.svg#paw-heart" /></svg>
+          <span data-bind="title">Lotteria Zampette</span>
+        </a>
+        <nav class="nav" aria-label="Sezioni">
+          <a href="#numeri">I numeri</a>
+          <a href="#premi" data-if="prizes" hidden>Premi</a>
+          <a href="#come-funziona">Come funziona</a>
+        </nav>
+        <a class="btn btn-sm header-cta" href="#numeri">
+          <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg>
+          <span class="cta-long">Scegli il numero</span><span class="cta-short">Scegli</span>
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="paw-trail" aria-hidden="true">
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+          <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+        </div>
+        <div class="container hero-grid">
+          <div>
+            <span class="eyebrow">
+              <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#heart" /></svg>
+              Lotteria di beneficenza
+            </span>
+            <h1 data-bind="title">Lotteria Zampette</h1>
+            <p class="tagline" data-bind="tagline">Un biglietto, mille code felici</p>
+            <p class="lead pre-line" data-bind="description">
+              Scegli il tuo numero fortunato e aiutaci a prenderci cura dei nostri amici a quattro zampe.
+            </p>
+            <div class="hero-actions">
+              <a class="btn" href="#numeri">
+                <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg>
+                Scegli il tuo numero
+              </a>
+              <a class="btn btn-secondary" href="#come-funziona">Come funziona</a>
+            </div>
+
+            <div class="facts">
+              <div class="fact">
+                <span class="fact-icon"
+                  ><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#ticket" /></svg
+                ></span>
+                <div><strong data-bind="price">10,00 €</strong><span>a biglietto</span></div>
+              </div>
+              <div class="fact">
+                <span class="fact-icon"
+                  ><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg
+                ></span>
+                <div>
+                  <strong data-bind="range">801 – 900</strong><span data-bind="range-count">100 numeri in palio</span>
+                </div>
+              </div>
+              <div class="fact is-wide" data-if="draw" hidden>
+                <span class="fact-icon"
+                  ><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#calendar" /></svg
+                ></span>
+                <div><strong data-bind="draw-short"></strong><span data-bind="draw-countdown">estrazione</span></div>
+              </div>
+            </div>
+
+            <div class="progress" aria-live="polite">
+              <div class="progress-head">
+                <span data-bind="progress-text">Caricamento dei numeri…</span>
+                <span class="muted" data-bind="progress-available"></span>
+              </div>
+              <div class="progress-bar" aria-hidden="true">
+                <span class="is-sold" data-bar="sold"></span>
+                <span class="is-reserved" data-bar="reserved"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-art" aria-hidden="true">
+            <svg class="floating-paw p1"><use href="/img/icons.svg#paw" /></svg>
+            <svg class="floating-paw p2"><use href="/img/icons.svg#paw" /></svg>
+            <svg class="floating-paw p3"><use href="/img/icons.svg#paw-heart" /></svg>
+            <svg class="floating-paw p4"><use href="/img/icons.svg#paw" /></svg>
+            <div class="ticket">
+              <span class="ticket-label">Biglietto della fortuna</span>
+              <span class="ticket-number"><small>N°</small><span data-bind="ticket-number">8··</span></span>
+              <span class="ticket-bottom">
+                <span data-bind="price">10,00 €</span>
+                <span class="ticket-paws">
+                  <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+                  <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+                  <svg class="icon"><use href="/img/icons.svg#paw" /></svg>
+                </span>
+              </span>
+              <svg class="ticket-stub"><use href="/img/icons.svg#paw-heart" /></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="premi" class="section" data-if="prizes" hidden>
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <span class="kicker"
+                ><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#gift" /></svg> In palio</span
+              >
+              <h2 class="section-title">I premi</h2>
+            </div>
+          </div>
+          <div class="prizes-grid" id="prizes"></div>
+        </div>
+      </section>
+
+      <section id="numeri" class="section">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <span class="kicker"
+                ><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg> Scegli</span
+              >
+              <h2 class="section-title">I numeri</h2>
+              <p class="section-sub">
+                Tocca uno o più numeri liberi, poi premi <strong>Continua</strong>: ti mostreremo subito i dati per il
+                bonifico.
+              </p>
+            </div>
+          </div>
+
+          <div id="my-orders" class="my-orders" hidden></div>
+          <div id="sales-closed" class="notice" hidden>
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#info" /></svg>
+            <p>Le vendite dei biglietti sono chiuse. Grazie a tutti per il sostegno!</p>
+          </div>
+          <div id="load-error" class="notice is-error" hidden>
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#alert" /></svg>
+            <p>
+              Non riusciamo a caricare i numeri in questo momento.
+              <button type="button" class="btn btn-sm btn-secondary" id="retry">Riprova</button>
+            </p>
+          </div>
+
+          <div class="numbers-card">
+            <div class="toolbar">
+              <ul class="legend">
+                <li><span class="swatch"></span> Libero</li>
+                <li><span class="swatch is-selected"></span> Scelto da te</li>
+                <li><span class="swatch is-reserved"></span> Prenotato</li>
+                <li><span class="swatch is-sold"></span> Venduto</li>
+              </ul>
+              <div class="toolbar-actions">
+                <label class="toggle"><input type="checkbox" id="only-free" /> Solo liberi</label>
+                <button type="button" class="btn btn-sm btn-secondary" id="random-pick">
+                  <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#dice" /></svg>
+                  Numero a caso
+                </button>
+              </div>
+            </div>
+            <div class="grid" id="grid" role="group" aria-label="Numeri della lotteria"></div>
+            <div class="grid-foot">
+              <span data-bind="grid-summary"></span>
+              <span data-bind="max-per-order"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="come-funziona" class="section">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <span class="kicker"
+                ><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#info" /></svg> Semplice</span
+              >
+              <h2 class="section-title">Come funziona</h2>
+            </div>
+          </div>
+          <div class="steps-grid">
+            <article class="step">
+              <div class="step-num">
+                <svg aria-hidden="true"><use href="/img/icons.svg#paw" /></svg><span>1</span>
+              </div>
+              <h3>Scegli i numeri</h3>
+              <p>Tocca i numeri liberi che preferisci: puoi sceglierne anche più di uno.</p>
+            </article>
+            <article class="step">
+              <div class="step-num">
+                <svg aria-hidden="true"><use href="/img/icons.svg#paw" /></svg><span>2</span>
+              </div>
+              <h3>Conferma</h3>
+              <p>Inserisci nome ed email: i numeri vengono riservati per te e ricevi i dati per il bonifico.</p>
+            </article>
+            <article class="step">
+              <div class="step-num">
+                <svg aria-hidden="true"><use href="/img/icons.svg#paw" /></svg><span>3</span>
+              </div>
+              <h3>Fai il bonifico</h3>
+              <p>Usa l'IBAN e la causale indicati: così riconosciamo subito il tuo pagamento.</p>
+            </article>
+            <article class="step">
+              <div class="step-num">
+                <svg aria-hidden="true"><use href="/img/icons.svg#paw" /></svg><span>4</span>
+              </div>
+              <h3>Ricevi la conferma</h3>
+              <p>Quando l'accredito arriva confermiamo il tuo biglietto via email. In bocca al lupo!</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#paw-heart" /></svg>
+          <span data-bind="organization">Lotteria Zampette</span>
+        </div>
+        <nav class="footer-links" aria-label="Link utili">
+          <span data-bind="contact" hidden><a href="#">Contattaci</a></span>
+          <a href="/privacy">Privacy</a>
+          <a href="/admin">Area riservata</a>
+        </nav>
+        <p class="footer-note">
+          © <span data-bind="year">2026</span> · Lotteria di beneficenza · Con amore, da tante zampette
+          <svg class="icon inline-paw" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg>
+        </p>
+      </div>
+    </footer>
+
+    <div class="selection-bar" id="selection-bar" aria-hidden="true" inert>
+      <svg class="selection-paw" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg>
+      <div class="selection-info">
+        <div class="selection-count" id="selection-count"></div>
+        <div class="selection-list" id="selection-list"></div>
+      </div>
+      <button type="button" class="btn" id="open-checkout">
+        Continua
+        <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#arrow-right" /></svg>
+      </button>
+    </div>
+
+    <dialog class="sheet" id="checkout" aria-labelledby="checkout-title">
+      <div class="sheet-head">
+        <h2 class="sheet-title" id="checkout-title">
+          <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg>
+          I tuoi numeri
+        </h2>
+        <button type="button" class="icon-btn" data-close aria-label="Chiudi">
+          <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#x" /></svg>
+        </button>
+      </div>
+      <div class="sheet-body">
+        <div class="chips" id="checkout-chips"></div>
+        <div class="summary">
+          <span id="checkout-count"></span>
+          <span class="summary-total" id="checkout-total"></span>
+        </div>
+
+        <div class="notice is-error" id="checkout-error" hidden>
+          <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#alert" /></svg>
+          <p></p>
+        </div>
+
+        <form id="checkout-form" novalidate>
+          <div class="field" data-field="name">
+            <label for="f-name">Nome e cognome <span class="req">*</span></label>
+            <input class="input" id="f-name" name="name" autocomplete="name" maxlength="100" required />
+          </div>
+          <div class="field" data-field="email">
+            <label for="f-email">Email <span class="req">*</span></label>
+            <input
+              class="input"
+              id="f-email"
+              name="email"
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              maxlength="254"
+              required
+            />
+            <span class="hint">Ti scriveremo qui con i dati del bonifico e la conferma.</span>
+          </div>
+          <div class="field" data-field="phone">
+            <label for="f-phone">Telefono <span class="muted">(facoltativo)</span></label>
+            <input
+              class="input"
+              id="f-phone"
+              name="phone"
+              type="tel"
+              inputmode="tel"
+              autocomplete="tel"
+              maxlength="30"
+            />
+          </div>
+          <div class="field" data-field="note">
+            <label for="f-note">Un messaggio per noi <span class="muted">(facoltativo)</span></label>
+            <textarea class="input" id="f-note" name="note" rows="2" maxlength="500"></textarea>
+          </div>
+          <div class="hp-field" aria-hidden="true">
+            <label for="f-website">Lascia vuoto questo campo</label>
+            <input id="f-website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+          <div class="field" data-field="privacy">
+            <label class="check">
+              <input type="checkbox" id="f-privacy" name="privacy" required />
+              <span
+                >Ho letto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a> e acconsento al
+                trattamento dei miei dati per gestire la prenotazione. <span class="req">*</span></span
+              >
+            </label>
+          </div>
+          <button type="submit" class="btn btn-block" id="checkout-submit">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg>
+            Conferma la prenotazione
+          </button>
+          <p class="form-note">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#info" /></svg>
+            <span
+              >Dopo la conferma vedrai i dati per il bonifico. I numeri restano riservati per te finché non verifichiamo
+              il pagamento.</span
+            >
+          </p>
+        </form>
+      </div>
+    </dialog>
+  </body>
+</html>

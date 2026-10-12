@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Area riservata 🐾</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#f0568f" />
+    <link rel="icon" href="/img/paw.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/fredoka.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/nunito.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="stylesheet" href="/css/style.css" />
+    <script type="module" src="/js/admin.js"></script>
+  </head>
+  <body class="admin-page">
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="/" title="Vai al sito">
+          <svg class="brand-logo" aria-hidden="true"><use href="/img/icons.svg#paw-heart" /></svg>
+          <span>Area riservata</span>
+        </a>
+        <div class="dash-actions" id="header-actions" hidden>
+          <button type="button" class="btn btn-sm btn-ghost" id="refresh-btn">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#refresh" /></svg>
+            <span class="label-desktop">Aggiorna</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-secondary" id="logout-btn">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#logout" /></svg>
+            <span class="label-desktop">Esci</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Accesso -->
+      <section class="login-wrap" id="login-view" hidden>
+        <div class="login-card">
+          <svg class="big-paw" aria-hidden="true"><use href="/img/icons.svg#paw-heart" /></svg>
+          <h1>Area riservata</h1>
+          <p class="muted">Gestisci prenotazioni, pagamenti e impostazioni della lotteria.</p>
+          <div class="notice" id="login-not-configured" hidden>
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#alert" /></svg>
+            <p>
+              La password non è ancora stata impostata. Aggiungi il secret <strong>ADMIN_PASSWORD</strong> nelle
+              impostazioni di Cloudflare (vedi README).
+            </p>
+          </div>
+          <form id="login-form" novalidate>
+            <div class="field">
+              <label for="password">Password</label>
+              <input
+                class="input"
+                id="password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                required
+              />
+            </div>
+            <div class="notice is-error" id="login-error" hidden>
+              <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#alert" /></svg>
+              <p></p>
+            </div>
+            <button class="btn btn-block" type="submit" id="login-submit">
+              <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#lock" /></svg>
+              Entra
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Dashboard -->
+      <section class="dash" id="dash-view" hidden>
+        <div class="container">
+          <div class="dash-head">
+            <div>
+              <span class="kicker"
+                ><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg> Dashboard</span
+              >
+              <h1 id="dash-title">Lotteria</h1>
+            </div>
+            <div class="dash-actions">
+              <a class="btn btn-sm btn-secondary" href="/api/admin/export.csv" id="export-btn">
+                <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#download" /></svg>
+                Esporta Excel (CSV)
+              </a>
+              <a class="btn btn-sm btn-ghost" href="/" target="_blank" rel="noopener">
+                <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#arrow-right" /></svg>
+                Vedi il sito
+              </a>
+            </div>
+          </div>
+
+          <div id="alerts"></div>
+          <div class="stats" id="stats"></div>
+
+          <div class="tabs" role="tablist" aria-label="Sezioni della dashboard">
+            <button
+              class="tab"
+              role="tab"
+              id="tab-orders"
+              aria-controls="panel-orders"
+              aria-selected="true"
+              data-tab="orders"
+            >
+              <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#list" /></svg>
+              Ordini <span class="badge" id="badge-pending">0</span>
+            </button>
+            <button
+              class="tab"
+              role="tab"
+              id="tab-numbers"
+              aria-controls="panel-numbers"
+              aria-selected="false"
+              data-tab="numbers"
+            >
+              <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#grid" /></svg>
+              Numeri
+            </button>
+            <button
+              class="tab"
+              role="tab"
+              id="tab-settings"
+              aria-controls="panel-settings"
+              aria-selected="false"
+              data-tab="settings"
+            >
+              <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#sliders" /></svg>
+              Impostazioni
+            </button>
+          </div>
+
+          <!-- Ordini -->
+          <div class="panel" role="tabpanel" id="panel-orders" aria-labelledby="tab-orders">
+            <div class="filters">
+              <div class="pills" role="group" aria-label="Filtra per stato">
+                <button type="button" class="pill" data-filter="pending" aria-pressed="true">In attesa</button>
+                <button type="button" class="pill" data-filter="confirmed" aria-pressed="false">Confermati</button>
+                <button type="button" class="pill" data-filter="cancelled" aria-pressed="false">Annullati</button>
+                <button type="button" class="pill" data-filter="all" aria-pressed="false">Tutti</button>
+              </div>
+              <label class="search">
+                <span class="sr-only">Cerca</span>
+                <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#search" /></svg>
+                <input class="input" type="search" id="search" placeholder="Cerca nome, email, numero o codice" />
+              </label>
+            </div>
+            <div class="order-list" id="order-list"></div>
+          </div>
+
+          <!-- Numeri -->
+          <div class="panel" role="tabpanel" id="panel-numbers" aria-labelledby="tab-numbers" hidden>
+            <div class="numbers-card">
+              <div class="toolbar">
+                <ul class="legend">
+                  <li><span class="swatch"></span> Libero</li>
+                  <li><span class="swatch is-reserved"></span> Prenotato (in attesa)</li>
+                  <li><span class="swatch is-sold"></span> Venduto</li>
+                </ul>
+                <span class="hint">Tocca un numero prenotato o venduto per vedere l'ordine.</span>
+              </div>
+              <div class="grid admin-grid" id="admin-grid"></div>
+            </div>
+          </div>
+
+          <!-- Impostazioni -->
+          <div class="panel" role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" hidden>
+            <form class="settings-form" id="settings-form" novalidate>
+              <fieldset>
+                <legend>
+                  <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#paw" /></svg> La lotteria
+                </legend>
+                <div class="form-grid two">
+                  <div class="field" data-field="title">
+                    <label for="s-title">Titolo <span class="req">*</span></label>
+                    <input class="input" id="s-title" name="title" maxlength="80" required />
+                  </div>
+                  <div class="field" data-field="organization">
+                    <label for="s-organization">Associazione / organizzatore</label>
+                    <input
+                      class="input"
+                      id="s-organization"
+                      name="organization"
+                      maxlength="120"
+                      placeholder="Es. Associazione Amici a 4 Zampe ODV"
+                    />
+                  </div>
+                  <div class="field span-all" data-field="tagline">
+                    <label for="s-tagline">Sottotitolo</label>
+                    <input class="input" id="s-tagline" name="tagline" maxlength="160" />
+                  </div>
+                  <div class="field span-all" data-field="description">
+                    <label for="s-description">Descrizione</label>
+                    <textarea class="input" id="s-description" name="description" rows="3" maxlength="2000"></textarea>
+                    <span class="hint">A chi va il ricavato, perché partecipare…</span>
+                  </div>
+                  <div class="field span-all" data-field="prizes">
+                    <label for="s-prizes">Premi</label>
+                    <textarea
+                      class="input"
+                      id="s-prizes"
+                      name="prizes"
+                      rows="4"
+                      maxlength="2000"
+                      placeholder="Un premio per riga, in ordine (dal primo all'ultimo)"
+                    ></textarea>
+                  </div>
+                  <div class="field" data-field="drawDate">
+                    <label for="s-drawDate">Data e ora dell'estrazione</label>
+                    <input class="input" id="s-drawDate" name="drawDate" type="datetime-local" />
+                  </div>
+                  <div class="field" data-field="drawPlace">
+                    <label for="s-drawPlace">Luogo dell'estrazione</label>
+                    <input
+                      class="input"
+                      id="s-drawPlace"
+                      name="drawPlace"
+                      maxlength="160"
+                      placeholder="Es. Piazza Garibaldi, Torino"
+                    />
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>
+                  <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#ticket" /></svg> Biglietti
+                </legend>
+                <div class="form-grid two">
+                  <div class="field" data-field="ticketPriceCents">
+                    <label for="s-price">Prezzo di un biglietto</label>
+                    <div class="input-affix">
+                      <span>€</span>
+                      <input
+                        class="input"
+                        id="s-price"
+                        name="ticketPrice"
+                        type="number"
+                        min="0.01"
+                        max="1000"
+                        step="0.01"
+                        inputmode="decimal"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div class="field" data-field="maxPerOrder">
+                    <label for="s-maxPerOrder">Numeri massimi per prenotazione</label>
+                    <input
+                      class="input"
+                      id="s-maxPerOrder"
+                      name="maxPerOrder"
+                      type="number"
+                      min="1"
+                      max="20"
+                      step="1"
+                      required
+                    />
+                  </div>
+                  <div class="field" data-field="numberFrom">
+                    <label for="s-numberFrom">Primo numero</label>
+                    <input class="input" id="s-numberFrom" name="numberFrom" type="number" min="0" step="1" required />
+                  </div>
+                  <div class="field" data-field="numberTo">
+                    <label for="s-numberTo">Ultimo numero</label>
+                    <input class="input" id="s-numberTo" name="numberTo" type="number" min="0" step="1" required />
+                  </div>
+                </div>
+                <label class="switch-field">
+                  <span>
+                    <strong>Vendite aperte</strong>
+                    <span class="hint">Spegni quando vuoi chiudere le vendite (ad esempio prima dell'estrazione).</span>
+                  </span>
+                  <span class="switch"><input type="checkbox" name="salesOpen" role="switch" /><span></span></span>
+                </label>
+              </fieldset>
+
+              <fieldset>
+                <legend>
+                  <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#bank" /></svg> Dati per il bonifico
+                </legend>
+                <div class="form-grid two">
+                  <div class="field" data-field="beneficiary">
+                    <label for="s-beneficiary">Intestatario del conto</label>
+                    <input class="input" id="s-beneficiary" name="beneficiary" maxlength="120" />
+                  </div>
+                  <div class="field" data-field="iban">
+                    <label for="s-iban">IBAN</label>
+                    <input
+                      class="input"
+                      id="s-iban"
+                      name="iban"
+                      maxlength="42"
+                      autocapitalize="characters"
+                      spellcheck="false"
+                      placeholder="IT00 X000 0000 0000 0000 0000 000"
+                    />
+                  </div>
+                  <div class="field" data-field="bankName">
+                    <label for="s-bankName">Banca <span class="muted">(facoltativo)</span></label>
+                    <input class="input" id="s-bankName" name="bankName" maxlength="120" />
+                  </div>
+                  <div class="field" data-field="bic">
+                    <label for="s-bic">BIC / SWIFT <span class="muted">(facoltativo)</span></label>
+                    <input
+                      class="input"
+                      id="s-bic"
+                      name="bic"
+                      maxlength="11"
+                      autocapitalize="characters"
+                      spellcheck="false"
+                    />
+                  </div>
+                  <div class="field" data-field="causalePrefix">
+                    <label for="s-causalePrefix">Inizio della causale</label>
+                    <input class="input" id="s-causalePrefix" name="causalePrefix" maxlength="40" />
+                    <span class="hint" id="causale-preview"></span>
+                  </div>
+                  <div class="field" data-field="paymentNotes">
+                    <label for="s-paymentNotes">Note per il pagamento <span class="muted">(facoltativo)</span></label>
+                    <textarea
+                      class="input"
+                      id="s-paymentNotes"
+                      name="paymentNotes"
+                      rows="2"
+                      maxlength="1000"
+                      placeholder="Es. Puoi pagare anche in contanti al banchetto del sabato."
+                    ></textarea>
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>
+                  <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#mail" /></svg> Contatti ed email
+                </legend>
+                <div class="mail-status" id="mail-status"></div>
+                <div class="form-grid two">
+                  <div class="field" data-field="contactEmail">
+                    <label for="s-contactEmail">Email di contatto</label>
+                    <input class="input" id="s-contactEmail" name="contactEmail" type="email" maxlength="254" />
+                    <span class="hint">Mostrata sul sito; le risposte dei clienti arrivano qui.</span>
+                  </div>
+                  <div>
+                    <label class="switch-field">
+                      <span>
+                        <strong>Avvisami delle nuove prenotazioni</strong>
+                        <span class="hint">Ricevi un'email all'indirizzo di contatto.</span>
+                      </span>
+                      <span class="switch"
+                        ><input type="checkbox" name="notifyAdmin" role="switch" /><span></span
+                      ></span>
+                    </label>
+                  </div>
+                </div>
+                <div class="field">
+                  <span class="field-label">Prova l'invio delle email</span>
+                  <div class="inline-form">
+                    <input
+                      class="input"
+                      type="email"
+                      id="test-email-to"
+                      placeholder="tuo@indirizzo.it"
+                      aria-label="Indirizzo per l'email di prova"
+                    />
+                    <button type="button" class="btn btn-secondary" id="test-email-btn">
+                      <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#send" /></svg>
+                      Invia email di prova
+                    </button>
+                  </div>
+                </div>
+              </fieldset>
+
+              <div class="save-bar">
+                <span class="muted" id="settings-status"></span>
+                <button type="button" class="btn btn-ghost" id="settings-reset">Annulla modifiche</button>
+                <button type="submit" class="btn" id="settings-save">
+                  <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#check" /></svg>
+                  Salva impostazioni
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Conferma pagamento -->
+    <dialog class="sheet" id="confirm-dialog" aria-labelledby="confirm-title">
+      <form method="dialog" id="confirm-form">
+        <div class="sheet-head">
+          <h2 class="sheet-title" id="confirm-title">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#check" /></svg>
+            Conferma pagamento
+          </h2>
+          <button type="button" class="icon-btn" data-close aria-label="Chiudi">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#x" /></svg>
+          </button>
+        </div>
+        <div class="sheet-body">
+          <p id="confirm-text"></p>
+          <div class="chips" id="confirm-chips"></div>
+          <div class="summary">
+            <span>Importo da verificare</span><span class="summary-total" id="confirm-amount"></span>
+          </div>
+          <label class="check field">
+            <input type="checkbox" name="notify" checked />
+            <span id="confirm-notify-label">Invia l'email di conferma al cliente</span>
+          </label>
+          <div class="field">
+            <label for="confirm-message"
+              >Messaggio aggiuntivo nell'email <span class="muted">(facoltativo)</span></label
+            >
+            <textarea
+              class="input"
+              id="confirm-message"
+              name="message"
+              rows="2"
+              maxlength="500"
+              placeholder="Es. Grazie mille, ci vediamo all'estrazione!"
+            ></textarea>
+          </div>
+          <div class="sheet-foot">
+            <button type="button" class="btn btn-ghost" data-close>Indietro</button>
+            <button type="submit" class="btn btn-success" id="confirm-submit">
+              <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#check" /></svg>
+              Conferma pagamento
+            </button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Annulla ordine -->
+    <dialog class="sheet" id="cancel-dialog" aria-labelledby="cancel-title">
+      <form method="dialog" id="cancel-form">
+        <div class="sheet-head">
+          <h2 class="sheet-title" id="cancel-title">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#x" /></svg>
+            Annulla e rimetti in vendita
+          </h2>
+          <button type="button" class="icon-btn" data-close aria-label="Chiudi">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#x" /></svg>
+          </button>
+        </div>
+        <div class="sheet-body">
+          <p id="cancel-text"></p>
+          <div class="chips" id="cancel-chips"></div>
+          <div class="field spaced">
+            <label for="cancel-reason">Motivo <span class="muted">(facoltativo, compare nell'email)</span></label>
+            <textarea class="input" id="cancel-reason" name="reason" rows="2" maxlength="500"></textarea>
+            <div class="quick-reasons">
+              <button type="button" class="pill" data-reason="Non abbiamo ricevuto il bonifico.">
+                Bonifico non ricevuto
+              </button>
+              <button type="button" class="pill" data-reason="Annullata su tua richiesta.">
+                Richiesta del cliente
+              </button>
+              <button type="button" class="pill" data-reason="Prenotazione duplicata.">Duplicata</button>
+            </div>
+          </div>
+          <label class="check field">
+            <input type="checkbox" name="notify" checked />
+            <span id="cancel-notify-label">Invia un'email al cliente</span>
+          </label>
+          <div class="sheet-foot">
+            <button type="button" class="btn btn-ghost" data-close>Indietro</button>
+            <button type="submit" class="btn btn-danger-solid" id="cancel-submit">
+              <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#x" /></svg>
+              Annulla l'ordine
+            </button>
+          </div>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- Dettaglio ordine (dalla griglia dei numeri) -->
+    <dialog class="sheet" id="order-dialog" aria-labelledby="order-dialog-title">
+      <div class="sheet-head">
+        <h2 class="sheet-title" id="order-dialog-title">
+          <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#ticket" /></svg>
+          <span>Ordine</span>
+        </h2>
+        <button type="button" class="icon-btn" data-close aria-label="Chiudi">
+          <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#x" /></svg>
+        </button>
+      </div>
+      <div class="sheet-body" id="order-dialog-body"></div>
+    </dialog>
+  </body>
+</html>

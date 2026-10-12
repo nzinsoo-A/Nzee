@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "lotteria-zampette",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // Pagine, stili, immagini: serviti direttamente da Cloudflare.
+  // Passano dal codice del Worker solo le chiamate /api/* e la home page
+  // (per inserire titolo e anteprima corretti quando il link viene condiviso).
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/"],
+    "not_found_handling": "404-page",
+  },
+
+  // Il "database": un Durable Object con SQLite integrato.
+  // Non serve creare nulla a mano: Cloudflare lo crea al primo deploy.
+  "durable_objects": {
+    "bindings": [{ "name": "RAFFLE", "class_name": "Raffle" }],
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Raffle"] }],
+
+  "observability": { "enabled": true },
+
+  // Le impostazioni segrete (password admin, credenziali email) NON vanno qui:
+  // si inseriscono dalla dashboard Cloudflare → Settings → Variables and Secrets.
+  // keep_vars evita che un nuovo deploy cancelli quelle inserite dalla dashboard.
+  // Vedi README.md.
+  "keep_vars": true,
+}

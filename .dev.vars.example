@@ -1,0 +1,22 @@
+# Copia questo file in ".dev.vars" per provare il sito sul tuo computer (npm run dev).
+# In produzione gli stessi valori si inseriscono come "Secrets" nella dashboard Cloudflare.
+
+# Password per entrare in /admin (obbligatoria)
+ADMIN_PASSWORD=cambiami-con-una-password-lunga
+
+# --- Email (facoltativo: scegline UNO) ---
+
+# Opzione A: Gmail (serve una "password per le app" di Google)
+# SMTP_HOST=smtp.gmail.com
+# SMTP_PORT=465
+# SMTP_USER=tuoindirizzo@gmail.com
+# SMTP_PASS=abcdabcdabcdabcd
+# MAIL_FROM=Lotteria Zampette <tuoindirizzo@gmail.com>
+
+# Opzione B: Brevo (https://www.brevo.com, piano gratuito 300 email/giorno)
+# BREVO_API_KEY=xkeysib-...
+# MAIL_FROM=Lotteria Zampette <mittente-verificato@esempio.it>
+
+# Opzione C: Resend (https://resend.com, serve un dominio verificato)
+# RESEND_API_KEY=re_...
+# MAIL_FROM=Lotteria Zampette <lotteria@tuodominio.it>

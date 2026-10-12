@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <defs>
+    <g id="p">
+      <path d="M50 47C40 47 30 55 26 65C22 74 26 83 35 84C41 85 45 81 50 81C55 81 59 85 65 84C74 83 78 74 74 65C70 55 60 47 50 47Z"/>
+      <ellipse cx="21" cy="45" rx="8.5" ry="11" transform="rotate(-20 21 45)"/>
+      <ellipse cx="36" cy="26" rx="9" ry="12" transform="rotate(-8 36 26)"/>
+      <ellipse cx="64" cy="26" rx="9" ry="12" transform="rotate(8 64 26)"/>
+      <ellipse cx="79" cy="45" rx="8.5" ry="11" transform="rotate(20 79 45)"/>
+    </g>
+  </defs>
+  <g fill="#ffffff" fill-opacity=".09">
+    <use href="#p" transform="translate(14 18) rotate(-22 15 15) scale(.3)"/>
+    <use href="#p" transform="translate(150 30) rotate(18 12 12) scale(.24)"/>
+    <use href="#p" transform="translate(84 104) rotate(6 14 14) scale(.28)"/>
+    <use href="#p" transform="translate(196 140) rotate(-34 10 10) scale(.2)"/>
+    <use href="#p" transform="translate(26 176) rotate(28 12 12) scale(.24)"/>
+    <use href="#p" transform="translate(140 196) rotate(-8 9 9) scale(.18)"/>
+  </g>
+</svg>
