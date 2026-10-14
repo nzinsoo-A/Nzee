@@ -17,8 +17,8 @@ export const DEFAULT_SETTINGS = Object.freeze({
   drawDate: '',
   drawPlace: '',
   ticketPriceCents: 1000,
-  numberFrom: 801,
-  numberTo: 900,
+  // Gruppi di numeri in vendita ("da" … "a"); se ne possono aggiungere altri dall'area riservata.
+  numberRanges: Object.freeze([Object.freeze({ from: 801, to: 900 })]),
   maxPerOrder: 10,
   salesOpen: true,
   beneficiary: '',
@@ -40,8 +40,7 @@ const SETTINGS_RULES = {
   drawDate: { type: 'drawDate' },
   drawPlace: { type: 'text', max: 160 },
   ticketPriceCents: { type: 'int', min: 1, max: 100000, message: 'Inserisci un prezzo tra 0,01 € e 1.000 €.' },
-  numberFrom: { type: 'int', min: 0, max: 99999 },
-  numberTo: { type: 'int', min: 0, max: 99999 },
+  numberRanges: { type: 'ranges' },
   maxPerOrder: { type: 'int', min: 1, max: 20 },
   salesOpen: { type: 'bool' },
   beneficiary: { type: 'text', max: 120 },
@@ -54,7 +53,9 @@ const SETTINGS_RULES = {
   notifyAdmin: { type: 'bool' },
 };
 
-const MAX_NUMBERS_IN_RANGE = 1000;
+const MAX_TOTAL_NUMBERS = 1000;
+const MAX_RANGES = 20;
+const MAX_NUMBER = 99999;
 const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[^\s@<>()[\]\\,;:".]{2,}$/;
 const PHONE_RE = /^[+0-9 ().\-/]{5,30}$/;
@@ -147,7 +148,7 @@ export class RaffleStore {
   // ---------------------------------------------------------------- impostazioni
 
   getSettings() {
-    const settings = { ...DEFAULT_SETTINGS };
+    const settings = structuredClone(DEFAULT_SETTINGS);
     for (const row of this.sql.all('SELECT key, value FROM settings')) {
       if (!(row.key in DEFAULT_SETTINGS)) continue;
       try {
@@ -167,16 +168,19 @@ export class RaffleStore {
     }
     const next = validateSettings(merged);
 
-    const outside = this.sql.get(
-      `SELECT t.number AS number FROM tickets t
-       WHERE t.number < ? OR t.number > ? ORDER BY t.number LIMIT 1`,
-      next.numberFrom,
-      next.numberTo,
-    );
-    if (outside) {
+    // Un numero già prenotato o venduto non può sparire dalla vendita.
+    const outside = this.sql
+      .all('SELECT number FROM tickets ORDER BY number')
+      .map((row) => row.number)
+      .filter((n) => !inRanges(n, next.numberRanges));
+    if (outside.length) {
+      const list = outside.slice(0, 5).join(', ') + (outside.length > 5 ? '…' : '');
       throw new AppError('invalid_settings', 'Controlla le impostazioni.', {
         fields: {
-          numberTo: `Il numero ${outside.number} è già prenotato o venduto: l'intervallo deve includerlo.`,
+          numberRanges:
+            outside.length === 1
+              ? `Il numero ${list} è già prenotato o venduto: non puoi toglierlo dalla vendita.`
+              : `I numeri ${list} sono già prenotati o venduti: non puoi toglierli dalla vendita.`,
         },
       });
     }
@@ -199,25 +203,12 @@ export class RaffleStore {
 
   publicState() {
     const settings = this.getSettings();
-    const rows = this.sql.all(
-      `SELECT t.number AS number, o.status AS status
-       FROM tickets t JOIN orders o ON o.id = t.order_id
-       WHERE t.number BETWEEN ? AND ?`,
-      settings.numberFrom,
-      settings.numberTo,
-    );
-    const taken = {};
-    let sold = 0;
-    for (const row of rows) {
-      const isSold = row.status === 'confirmed';
-      taken[row.number] = isSold ? 'sold' : 'reserved';
-      if (isSold) sold++;
-    }
-    const total = settings.numberTo - settings.numberFrom + 1;
+    const { taken, sold, reserved } = this.#takenNumbers(settings);
+    const total = rangesTotal(settings.numberRanges);
     return {
       settings: publicSettings(settings),
       taken,
-      counts: { total, sold, reserved: rows.length - sold, available: total - rows.length },
+      counts: { total, sold, reserved, available: total - sold - reserved },
     };
   }
 
@@ -360,15 +351,7 @@ export class RaffleStore {
   }
 
   stats(settings = this.getSettings()) {
-    const tickets = this.sql.get(
-      `SELECT
-         COALESCE(SUM(CASE WHEN o.status = 'confirmed' THEN 1 ELSE 0 END), 0) AS sold,
-         COALESCE(SUM(CASE WHEN o.status = 'pending' THEN 1 ELSE 0 END), 0) AS reserved
-       FROM tickets t JOIN orders o ON o.id = t.order_id
-       WHERE t.number BETWEEN ? AND ?`,
-      settings.numberFrom,
-      settings.numberTo,
-    );
+    const tickets = this.#takenNumbers(settings);
     const orders = this.sql.get(
       `SELECT
          COALESCE(SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END), 0) AS pending,
@@ -378,7 +361,7 @@ export class RaffleStore {
          COALESCE(SUM(CASE WHEN status = 'pending' THEN total_cents ELSE 0 END), 0) AS pending_cents
        FROM orders`,
     );
-    const total = settings.numberTo - settings.numberFrom + 1;
+    const total = rangesTotal(settings.numberRanges);
     return {
       total,
       sold: tickets.sold,
@@ -445,7 +428,7 @@ export class RaffleStore {
         o.source === 'admin' ? 'Inserito da admin' : 'Sito',
       ]);
     // Punto e virgola + BOM: si apre correttamente con Excel in italiano.
-    return '﻿' + [header, ...rows].map((r) => r.map(csvCell).join(';')).join('\r\n') + '\r\n';
+    return String.fromCharCode(0xfeff) + [header, ...rows].map((r) => r.map(csvCell).join(';')).join('\r\n') + '\r\n';
   }
 
   // ---------------------------------------------------------------- sessioni admin
@@ -466,6 +449,27 @@ export class RaffleStore {
   }
 
   // ---------------------------------------------------------------- interni
+
+  // Numeri in vendita già presi: { taken: { 812: 'reserved', 845: 'sold' }, sold, reserved }
+  #takenNumbers(settings) {
+    const rows = this.sql.all(
+      `SELECT t.number AS number, o.status AS status FROM tickets t JOIN orders o ON o.id = t.order_id`,
+    );
+    const taken = {};
+    let sold = 0;
+    let reserved = 0;
+    for (const row of rows) {
+      if (!inRanges(row.number, settings.numberRanges)) continue;
+      if (row.status === 'confirmed') {
+        taken[row.number] = 'sold';
+        sold++;
+      } else {
+        taken[row.number] = 'reserved';
+        reserved++;
+      }
+    }
+    return { taken, sold, reserved };
+  }
 
   #orderById(id) {
     return mapOrder(this.sql.get('SELECT * FROM orders WHERE id = ?', id));
@@ -492,8 +496,7 @@ export function publicSettings(s) {
     drawDate: s.drawDate,
     drawPlace: s.drawPlace,
     ticketPriceCents: s.ticketPriceCents,
-    numberFrom: s.numberFrom,
-    numberTo: s.numberTo,
+    numberRanges: s.numberRanges.map((r) => ({ from: r.from, to: r.to })),
     maxPerOrder: s.maxPerOrder,
     salesOpen: s.salesOpen,
     contactEmail: s.contactEmail,
@@ -578,8 +581,8 @@ export function validateOrderInput(input, settings) {
   const numbers = [...new Set(raw.map((n) => Number(n)))].sort((a, b) => a - b);
   if (!numbers.length) {
     errors.numbers = 'Seleziona almeno un numero.';
-  } else if (numbers.some((n) => !Number.isInteger(n) || n < settings.numberFrom || n > settings.numberTo)) {
-    errors.numbers = `I numeri disponibili vanno da ${settings.numberFrom} a ${settings.numberTo}.`;
+  } else if (numbers.some((n) => !Number.isInteger(n) || !inRanges(n, settings.numberRanges))) {
+    errors.numbers = `Numero non valido: i numeri in vendita sono ${describeRanges(settings.numberRanges)}.`;
   } else if (numbers.length > settings.maxPerOrder) {
     errors.numbers = `Puoi prenotare al massimo ${settings.maxPerOrder} numeri per volta.`;
   }
@@ -654,13 +657,13 @@ export function validateSettings(input) {
         out[key] = email;
         break;
       }
-    }
-  }
-  if (!errors.numberFrom && !errors.numberTo) {
-    if (out.numberFrom > out.numberTo) {
-      errors.numberTo = 'Il numero finale deve essere maggiore o uguale a quello iniziale.';
-    } else if (out.numberTo - out.numberFrom + 1 > MAX_NUMBERS_IN_RANGE) {
-      errors.numberTo = `Al massimo ${MAX_NUMBERS_IN_RANGE} numeri.`;
+      case 'ranges': {
+        const ranges = (Array.isArray(value) ? value : []).map((r) => ({ from: toInt(r?.from), to: toInt(r?.to) }));
+        const problem = rangesProblem(ranges);
+        if (problem) errors[key] = problem;
+        out[key] = ranges.sort((a, b) => a.from - b.from);
+        break;
+      }
     }
   }
   if (Object.keys(errors).length) {
@@ -668,6 +671,47 @@ export function validateSettings(input) {
   }
   return out;
 }
+
+// ------------------------------------------------------------------ gruppi di numeri
+
+export function inRanges(n, ranges) {
+  return ranges.some((r) => n >= r.from && n <= r.to);
+}
+
+export function rangesTotal(ranges) {
+  return ranges.reduce((sum, r) => sum + r.to - r.from + 1, 0);
+}
+
+// [{801, 900}, {1001, 1050}] -> "801–900, 1001–1050"
+export function describeRanges(ranges) {
+  return ranges.map((r) => (r.from === r.to ? String(r.from) : `${r.from}–${r.to}`)).join(', ');
+}
+
+function toInt(value) {
+  const n = typeof value === 'string' && value.trim() !== '' ? Number(value) : value;
+  return Number.isInteger(n) ? n : NaN;
+}
+
+function rangesProblem(ranges) {
+  if (!ranges.length) return 'Serve almeno un gruppo di numeri.';
+  if (ranges.length > MAX_RANGES) return `Al massimo ${MAX_RANGES} gruppi di numeri.`;
+  for (const r of ranges) {
+    if (!Number.isInteger(r.from) || !Number.isInteger(r.to) || r.from < 0 || r.to > MAX_NUMBER) {
+      return `Indica per ogni gruppo il numero "da" e il numero "a" (numeri interi da 0 a ${MAX_NUMBER}).`;
+    }
+    if (r.from > r.to) return `Nel gruppo ${r.from}–${r.to} il numero "da" deve essere più piccolo del numero "a".`;
+  }
+  const sorted = [...ranges].sort((a, b) => a.from - b.from);
+  for (let i = 1; i < sorted.length; i++) {
+    const [a, b] = [sorted[i - 1], sorted[i]];
+    if (b.from <= a.to) return `I numeri ${describeRanges([a])} e ${describeRanges([b])} si sovrappongono.`;
+  }
+  const total = rangesTotal(sorted);
+  if (total > MAX_TOTAL_NUMBERS) return `In totale al massimo ${MAX_TOTAL_NUMBERS} numeri (così sarebbero ${total}).`;
+  return '';
+}
+
+// ------------------------------------------------------------------ IBAN
 
 export function normalizeIban(value) {
   return String(value ?? '')

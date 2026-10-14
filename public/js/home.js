@@ -7,9 +7,13 @@ import {
   daysUntil,
   drawDateLabel,
   euro,
+  groupLabel,
   h,
   icon,
+  inRanges,
   loadMyOrders,
+  numberGroups,
+  numberTiles,
   pageUrl,
   plural,
   rememberOrder,
@@ -61,8 +65,8 @@ function applyState(data) {
   state.taken = data.taken;
   state.counts = data.counts;
 
-  const { numberFrom, numberTo } = state.settings;
-  const lost = [...state.selected].filter((n) => state.taken[n] || n < numberFrom || n > numberTo);
+  const ranges = state.settings.numberRanges;
+  const lost = [...state.selected].filter((n) => state.taken[n] || !inRanges(n, ranges));
   if (lost.length) {
     lost.forEach((n) => state.selected.delete(n));
     toast(
@@ -74,7 +78,7 @@ function applyState(data) {
   }
 
   renderInfo();
-  const rangeKey = `${numberFrom}-${numberTo}`;
+  const rangeKey = JSON.stringify(ranges);
   if (rangeKey !== state.rangeKey) {
     state.rangeKey = rangeKey;
     buildGrid();
@@ -93,7 +97,11 @@ function renderInfo() {
   setText('[data-bind="tagline"]', s.tagline);
   setText('[data-bind="description"]', s.description);
   setText('[data-bind="price"]', euro(s.ticketPriceCents));
-  setText('[data-bind="range"]', `${s.numberFrom} – ${s.numberTo}`);
+  const groups = numberGroups(s.numberRanges);
+  setText(
+    '[data-bind="range"]',
+    groups.length <= 2 ? groups.map(groupLabel).join(' · ') : `${groups[0].from} – ${groups[groups.length - 1].to}`,
+  );
   setText('[data-bind="range-count"]', `${plural(c.total, 'numero', 'numeri')} in palio`);
   $('[data-bind="tagline"]').hidden = !s.tagline;
 
@@ -162,17 +170,16 @@ function renderSkeleton() {
 }
 
 function buildGrid() {
-  const { numberFrom, numberTo } = state.settings;
-  const tiles = [];
-  for (let n = numberFrom; n <= numberTo; n++) {
-    tiles.push(h('button', { type: 'button', class: 'num', dataset: { n: String(n) } }, h('span', {}, String(n))));
-  }
-  grid.replaceChildren(...tiles);
+  grid.replaceChildren(
+    ...numberTiles(state.settings.numberRanges, (n) =>
+      h('button', { type: 'button', class: 'num', dataset: { n: String(n) } }, h('span', {}, String(n))),
+    ),
+  );
 }
 
 function updateGrid() {
   const open = state.settings.salesOpen;
-  for (const tile of grid.children) {
+  for (const tile of grid.querySelectorAll('.num')) {
     const n = Number(tile.dataset.n);
     const status = state.taken[n];
     const selected = state.selected.has(n);
@@ -194,14 +201,15 @@ function updateGrid() {
   const ticketNumber = $('[data-bind="ticket-number"]');
   if (ticketNumber.dataset.rolled !== 'true' && free) {
     ticketNumber.dataset.rolled = 'true';
-    ticketNumber.textContent = String(randomFreeNumber() ?? state.settings.numberFrom);
+    ticketNumber.textContent = String(randomFreeNumber() ?? state.settings.numberRanges[0].from);
   }
 }
 
 function randomFreeNumber() {
-  const { numberFrom, numberTo } = state.settings;
   const free = [];
-  for (let n = numberFrom; n <= numberTo; n++) if (!state.taken[n] && !state.selected.has(n)) free.push(n);
+  for (const r of state.settings.numberRanges) {
+    for (let n = r.from; n <= r.to; n++) if (!state.taken[n] && !state.selected.has(n)) free.push(n);
+  }
   return free.length ? free[Math.floor(Math.random() * free.length)] : null;
 }
 

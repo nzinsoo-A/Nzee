@@ -54,8 +54,7 @@ function expectAppError(fn, code) {
 test('stato iniziale: 100 numeri liberi dal 801 al 900', () => {
   const store = newStore();
   const state = store.publicState();
-  assert.equal(state.settings.numberFrom, 801);
-  assert.equal(state.settings.numberTo, 900);
+  assert.deepEqual(state.settings.numberRanges, [{ from: 801, to: 900 }]);
   assert.deepEqual(state.taken, {});
   assert.deepEqual(state.counts, { total: 100, sold: 0, reserved: 0, available: 100 });
   assert.equal(state.settings.iban, undefined, 'i dati bancari non sono nella vista pubblica');
@@ -179,13 +178,12 @@ test('impostazioni: validazione e salvataggio', () => {
         title: '',
         iban: 'IT00X0000000000000000000000',
         contactEmail: 'boh',
-        numberFrom: 900,
-        numberTo: 800,
+        numberRanges: [{ from: 900, to: 800 }],
         ticketPriceCents: 0,
       }),
     'invalid_settings',
   );
-  for (const field of ['title', 'iban', 'contactEmail', 'numberTo', 'ticketPriceCents']) {
+  for (const field of ['title', 'iban', 'contactEmail', 'numberRanges', 'ticketPriceCents']) {
     assert.ok(err.details.fields[field], `errore atteso su ${field}`);
   }
 
@@ -203,12 +201,93 @@ test('vendite chiuse: niente nuove prenotazioni', () => {
   expectAppError(() => store.createOrder(buyer([801])), 'sales_closed');
 });
 
-test("non si può restringere l'intervallo escludendo numeri già prenotati", () => {
+test('si possono aggiungere altri gruppi di numeri ("da" … "a")', () => {
   const store = newStore();
-  store.createOrder(buyer([895]));
-  expectAppError(() => store.updateSettings({ numberTo: 890 }), 'invalid_settings');
-  store.updateSettings({ numberTo: 950 });
+  const saved = store.updateSettings({
+    numberRanges: [
+      { from: '1001', to: '1050' },
+      { from: 801, to: 900 },
+    ],
+  });
+  assert.deepEqual(saved.numberRanges, [
+    { from: 801, to: 900 },
+    { from: 1001, to: 1050 },
+  ]);
+  const state = store.publicState();
+  assert.equal(state.counts.total, 150);
+  assert.equal(store.stats().available, 150);
+
+  assert.deepEqual(store.createOrder(buyer([1001, 850])).numbers, [850, 1001]);
+  assert.equal(store.publicState().taken[1001], 'reserved');
+  const err = expectAppError(() => store.createOrder(buyer([950])), 'invalid_input');
+  assert.match(err.details.fields.numbers, /801–900, 1001–1050/);
+});
+
+test('gruppi di numeri: errori chiari', () => {
+  const store = newStore();
+  const problem = (ranges) =>
+    expectAppError(() => store.updateSettings({ numberRanges: ranges }), 'invalid_settings').details.fields
+      .numberRanges;
+  assert.match(problem([]), /almeno un gruppo/);
+  assert.match(problem([{ from: 801, to: '' }]), /"da" e il numero "a"/);
+  assert.match(problem([{ from: 950, to: 901 }]), /più piccolo/);
+  assert.match(
+    problem([
+      { from: 801, to: 900 },
+      { from: 890, to: 950 },
+    ]),
+    /801–900 e 890–950 si sovrappongono/,
+  );
+  assert.match(problem([{ from: 1, to: 1001 }]), /al massimo 1000 numeri/);
+  // gruppi consecutivi vanno bene
+  store.updateSettings({
+    numberRanges: [
+      { from: 801, to: 900 },
+      { from: 901, to: 950 },
+    ],
+  });
   assert.equal(store.publicState().counts.total, 150);
+});
+
+test('non si possono togliere dalla vendita numeri già prenotati', () => {
+  const store = newStore();
+  store.updateSettings({
+    numberRanges: [
+      { from: 801, to: 900 },
+      { from: 1001, to: 1010 },
+    ],
+  });
+  store.createOrder(buyer([1005, 895]));
+  const err = expectAppError(
+    () => store.updateSettings({ numberRanges: [{ from: 801, to: 900 }] }),
+    'invalid_settings',
+  );
+  assert.match(err.details.fields.numberRanges, /1005/);
+  expectAppError(
+    () =>
+      store.updateSettings({
+        numberRanges: [
+          { from: 801, to: 890 },
+          { from: 1001, to: 1010 },
+        ],
+      }),
+    'invalid_settings',
+  );
+  // un gruppo senza numeri presi si può togliere
+  store.updateSettings({
+    numberRanges: [
+      { from: 801, to: 900 },
+      { from: 1001, to: 1010 },
+      { from: 2001, to: 2005 },
+    ],
+  });
+  store.updateSettings({
+    numberRanges: [
+      { from: 801, to: 900 },
+      { from: 1001, to: 1010 },
+    ],
+  });
+  assert.equal(store.publicState().counts.total, 110);
 });
 
 test('il prezzo di un ordine resta quello del momento della prenotazione', () => {

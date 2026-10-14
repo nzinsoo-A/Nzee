@@ -69,8 +69,7 @@ test('pagine del sito', async () => {
 test('stato pubblico: 100 numeri dal 801 al 900, niente dati bancari', async () => {
   const { status, data } = await api('/api/public');
   assert.equal(status, 200);
-  assert.equal(data.settings.numberFrom, 801);
-  assert.equal(data.settings.numberTo, 900);
+  assert.deepEqual(data.settings.numberRanges, [{ from: 801, to: 900 }]);
   assert.equal(data.counts.total, 100);
   assert.equal(data.settings.iban, undefined);
   assert.equal(data.settings.organization, BANK.organization);
@@ -279,6 +278,29 @@ test('impostazioni: errori chiari e salvataggio', async () => {
   assert.match(home.data, /<title>Lotteria di Natale 🐾/);
 
   await admin('/api/admin/settings', { method: 'PUT', body: { title: 'Lotteria Zampette', ticketPriceCents: 1000 } });
+});
+
+test("aggiunta di nuovi numeri dall'area riservata", async () => {
+  const before = (await api('/api/public')).data;
+  const res = await admin('/api/admin/settings', {
+    method: 'PUT',
+    body: { numberRanges: [...before.settings.numberRanges, { from: 1001, to: 1020 }] },
+  });
+  assert.equal(res.status, 200, JSON.stringify(res.data));
+  const after = (await api('/api/public')).data;
+  assert.equal(after.counts.total, before.counts.total + 20);
+  assert.equal((await book([1015], { email: 'nuovi@example.com' })).status, 201);
+  assert.equal((await api('/api/public')).data.taken[1015], 'reserved');
+
+  const overlap = await admin('/api/admin/settings', {
+    method: 'PUT',
+    body: { numberRanges: [...after.settings.numberRanges, { from: 1010, to: 1030 }] },
+  });
+  assert.equal(overlap.status, 400);
+  assert.match(overlap.data.error.details.fields.numberRanges, /si sovrappongono/);
+
+  const drop = await admin('/api/admin/settings', { method: 'PUT', body: { numberRanges: [{ from: 801, to: 900 }] } });
+  assert.equal(drop.status, 400, 'il gruppo con il 1015 prenotato non si può togliere');
 });
 
 test('vendite chiuse', async () => {

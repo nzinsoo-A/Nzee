@@ -151,6 +151,54 @@
 
           <!-- Numeri -->
           <div class="panel" role="tabpanel" id="panel-numbers" aria-labelledby="tab-numbers" hidden>
+            <section class="card ranges-card" aria-labelledby="ranges-title">
+              <h2 class="card-title" id="ranges-title">
+                <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#ticket" /></svg>
+                Numeri in vendita
+              </h2>
+              <div class="range-list" id="range-list"></div>
+              <form id="add-range-form" novalidate>
+                <span class="field-label">Aggiungi altre caselle</span>
+                <div class="add-range-row">
+                  <div class="field">
+                    <label for="range-from">Da</label>
+                    <input
+                      class="input"
+                      id="range-from"
+                      name="from"
+                      type="number"
+                      min="0"
+                      max="99999"
+                      step="1"
+                      inputmode="numeric"
+                    />
+                  </div>
+                  <div class="field">
+                    <label for="range-to">A</label>
+                    <input
+                      class="input"
+                      id="range-to"
+                      name="to"
+                      type="number"
+                      min="0"
+                      max="99999"
+                      step="1"
+                      inputmode="numeric"
+                    />
+                  </div>
+                  <button type="submit" class="btn" id="add-range-submit">
+                    <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#plus" /></svg>
+                    Aggiungi numeri
+                  </button>
+                </div>
+                <p class="hint">Esempio: da 901 a 950 aggiunge 50 nuove caselle, subito visibili sul sito.</p>
+                <div class="notice is-error" id="range-error" hidden>
+                  <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#alert" /></svg>
+                  <p></p>
+                </div>
+              </form>
+            </section>
+
             <div class="numbers-card">
               <div class="toolbar">
                 <ul class="legend">
@@ -258,13 +306,15 @@
                       required
                     />
                   </div>
-                  <div class="field" data-field="numberFrom">
-                    <label for="s-numberFrom">Primo numero</label>
-                    <input class="input" id="s-numberFrom" name="numberFrom" type="number" min="0" step="1" required />
-                  </div>
-                  <div class="field" data-field="numberTo">
-                    <label for="s-numberTo">Ultimo numero</label>
-                    <input class="input" id="s-numberTo" name="numberTo" type="number" min="0" step="1" required />
+                  <div class="field span-all">
+                    <span class="field-label">Numeri in vendita</span>
+                    <div class="ranges-summary">
+                      <span id="settings-ranges"></span>
+                      <button type="button" class="btn btn-sm btn-secondary" id="manage-ranges">
+                        <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#plus" /></svg>
+                        Aggiungi o togli numeri
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <label class="switch-field">

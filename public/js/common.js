@@ -107,6 +107,45 @@ export function timeAgo(ms) {
 
 export const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
+// ------------------------------------------------------------------ gruppi di numeri
+
+export function inRanges(n, ranges) {
+  return ranges.some((r) => n >= r.from && n <= r.to);
+}
+
+// Gruppi da mostrare nella griglia: i gruppi consecutivi (es. 801–900 e 901–950) diventano uno solo.
+export function numberGroups(ranges) {
+  const groups = [];
+  for (const r of [...ranges].sort((a, b) => a.from - b.from)) {
+    const last = groups[groups.length - 1];
+    if (last && r.from === last.to + 1) last.to = r.to;
+    else groups.push({ from: r.from, to: r.to });
+  }
+  return groups;
+}
+
+export const groupLabel = (g) => (g.from === g.to ? String(g.from) : `${g.from} – ${g.to}`);
+
+// Costruisce le caselle della griglia: se i gruppi sono più di uno, ognuno ha la sua intestazione.
+export function numberTiles(ranges, makeTile) {
+  const groups = numberGroups(ranges);
+  const items = [];
+  for (const g of groups) {
+    if (groups.length > 1) {
+      items.push(
+        h(
+          'div',
+          { class: 'grid-group' },
+          icon('paw'),
+          g.from === g.to ? `Numero ${g.from}` : `Numeri ${groupLabel(g)}`,
+        ),
+      );
+    }
+    for (let n = g.from; n <= g.to; n++) items.push(makeTile(n));
+  }
+  return items;
+}
+
 // ------------------------------------------------------------------ DOM
 
 /**

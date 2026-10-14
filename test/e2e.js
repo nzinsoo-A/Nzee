@@ -280,6 +280,45 @@ test('chi ha pagato vede la conferma; i numeri annullati tornano liberi', async 
   await page.context().close();
 });
 
+test("l'admin aggiunge nuove caselle (da … a …) e le toglie", async () => {
+  const page = await newPage(DESKTOP);
+  page.on('dialog', (dialog) => dialog.accept());
+  await page.goto(`${site.url}/admin`);
+  await page.fill('#password', PASSWORD);
+  await page.click('#login-submit');
+  await page.waitForSelector('#dash-view:not([hidden])');
+  await page.click('[data-tab="numbers"]');
+  assert.equal(await page.inputValue('#range-from'), '901', 'propone il numero dopo l’ultimo');
+
+  await page.fill('#range-from', '1001');
+  await page.fill('#range-to', '990');
+  await page.click('#add-range-submit');
+  await page.waitForSelector('#range-error:not([hidden])');
+  assert.match(await page.textContent('#range-error'), /più piccolo/);
+
+  await page.fill('#range-to', '1010');
+  await page.click('#add-range-submit');
+  await page.waitForFunction(() => document.querySelectorAll('#admin-grid .num').length === 110);
+  assert.match(await page.textContent('#range-list'), /1001 – 1010/);
+  assert.match(await page.textContent('#stats'), /su 110 numeri/);
+  await shot(page, 'admin-aggiungi-numeri', true);
+
+  const home = await newPage(MOBILE);
+  await home.goto(site.url);
+  await home.waitForSelector('.num[data-n="1010"]');
+  assert.equal(await home.locator('.num[data-n]').count(), 110);
+  assert.match(await home.textContent('#grid'), /Numeri 1001 – 1010/);
+  await home.locator('.grid-group:nth-of-type(2)').scrollIntoViewIfNeeded();
+  await shot(home, 'griglia-nuovi-numeri-mobile');
+  await home.context().close();
+
+  // il gruppo 801–900 contiene numeri presi: non si può togliere; il nuovo sì
+  assert.equal(await page.isDisabled('.range-chip:has-text("801 – 900") button'), true);
+  await page.click('.range-chip:has-text("1001 – 1010") button');
+  await page.waitForFunction(() => document.querySelectorAll('#admin-grid .num').length === 100);
+  await page.context().close();
+});
+
 test('nessun errore JavaScript nelle pagine', () => {
   assert.deepEqual(pageErrors, []);
 });

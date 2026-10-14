@@ -5,8 +5,10 @@ import {
   api,
   dateTime,
   euro,
+  groupLabel,
   h,
   icon,
+  numberTiles,
   plural,
   setLoading,
   setupHeader,
@@ -146,6 +148,7 @@ function renderAll() {
   renderAlerts();
   renderStats();
   renderOrders();
+  renderRanges();
   renderNumbers();
   renderMailStatus();
   if (!state.settingsDirty) fillSettings();
@@ -547,11 +550,10 @@ function ordersByNumber() {
 
 function renderNumbers() {
   const { settings, taken } = state.data;
-  const tiles = [];
-  for (let n = settings.numberFrom; n <= settings.numberTo; n++) {
-    const status = taken[n];
-    tiles.push(
-      h(
+  $('#admin-grid').replaceChildren(
+    ...numberTiles(settings.numberRanges, (n) => {
+      const status = taken[n];
+      return h(
         'button',
         {
           type: 'button',
@@ -560,10 +562,117 @@ function renderNumbers() {
           'aria-label': `${n}, ${status === 'sold' ? 'venduto' : status === 'reserved' ? 'prenotato' : 'libero'}`,
         },
         h('span', {}, String(n)),
-      ),
-    );
+      );
+    }),
+  );
+}
+
+// ------------------------------------------------------------------ gruppi di numeri in vendita
+
+function renderRanges() {
+  const { settings, taken, stats } = state.data;
+  const ranges = settings.numberRanges;
+  $('#range-list').replaceChildren(
+    ...ranges.map((r) => {
+      let used = 0;
+      for (let n = r.from; n <= r.to; n++) if (taken[n]) used++;
+      const removable = ranges.length > 1 && used === 0;
+      return h(
+        'div',
+        { class: 'range-chip' },
+        h('strong', {}, groupLabel(r)),
+        h(
+          'span',
+          {},
+          plural(r.to - r.from + 1, 'numero', 'numeri'),
+          used ? ` · ${used} ${used === 1 ? 'preso' : 'presi'}` : '',
+        ),
+        h(
+          'button',
+          {
+            type: 'button',
+            class: 'icon-btn',
+            disabled: !removable,
+            title: removable
+              ? 'Togli questi numeri dalla vendita'
+              : used
+                ? 'Contiene numeri già prenotati o venduti'
+                : 'Deve restare almeno un gruppo di numeri',
+            'aria-label': `Togli i numeri ${groupLabel(r)}`,
+            onclick: () => removeRange(r),
+          },
+          icon('x'),
+        ),
+      );
+    }),
+  );
+  $('#settings-ranges').textContent =
+    `${ranges.map(groupLabel).join(', ')} (${plural(stats.total, 'numero', 'numeri')})`;
+
+  // Suggerisce come "da" il primo numero dopo l'ultimo in vendita.
+  const from = $('#range-from');
+  if (!from.value || from.dataset.suggested === 'true') {
+    from.value = String(Math.max(...ranges.map((r) => r.to)) + 1);
+    from.dataset.suggested = 'true';
   }
-  $('#admin-grid').replaceChildren(...tiles);
+}
+
+function showRangeError(message) {
+  const box = $('#range-error');
+  $('p', box).textContent = message;
+  box.hidden = !message;
+}
+
+async function saveRanges(ranges) {
+  return api('/api/admin/settings', { method: 'PUT', body: { numberRanges: ranges } });
+}
+
+async function addRange(event) {
+  event.preventDefault();
+  showRangeError('');
+  const fromText = $('#range-from').value.trim();
+  const toText = $('#range-to').value.trim();
+  const from = Number(fromText);
+  const to = Number(toText);
+  if (!fromText || !toText || !Number.isInteger(from) || !Number.isInteger(to)) {
+    return showRangeError("Scrivi il primo e l'ultimo numero da aggiungere (ad esempio da 901 a 950).");
+  }
+  if (from > to) return showRangeError('Il numero "da" deve essere più piccolo del numero "a".');
+
+  const button = $('#add-range-submit');
+  setLoading(button, true, 'Aggiungo…');
+  try {
+    await saveRanges([...state.data.settings.numberRanges, { from, to }]);
+    $('#range-to').value = '';
+    $('#range-from').value = '';
+    const count = to - from + 1;
+    toast(
+      `${count === 1 ? 'Aggiunto il numero' : 'Aggiunti i numeri'} ${groupLabel({ from, to })}: ${plural(count, 'nuova casella', 'nuove caselle')} sul sito`,
+      'success',
+    );
+    await reload({ quiet: true });
+  } catch (err) {
+    if (err.status === 401) {
+      toast('Sessione scaduta: accedi di nuovo.', 'warning');
+      showLogin(true);
+    } else {
+      showRangeError(err.details?.fields?.numberRanges || err.message);
+    }
+  } finally {
+    setLoading(button, false);
+  }
+}
+
+async function removeRange(range) {
+  if (!window.confirm(`Togliere dalla vendita i numeri ${groupLabel(range)}? Le caselle spariranno dal sito.`)) return;
+  showRangeError('');
+  try {
+    await saveRanges(state.data.settings.numberRanges.filter((r) => r.from !== range.from || r.to !== range.to));
+    toast(`Numeri ${groupLabel(range)} tolti dalla vendita`, 'success');
+    await reload({ quiet: true });
+  } catch (err) {
+    showRangeError(err.details?.fields?.numberRanges || err.message);
+  }
 }
 
 function openNumber(n) {
@@ -588,8 +697,6 @@ function fillSettings() {
     'drawDate',
     'drawPlace',
     'maxPerOrder',
-    'numberFrom',
-    'numberTo',
     'beneficiary',
     'bankName',
     'bic',
@@ -622,8 +729,6 @@ function readSettings() {
     drawPlace: f.drawPlace.value,
     ticketPriceCents: Number.isFinite(price) ? price : f.ticketPrice.value,
     maxPerOrder: f.maxPerOrder.value,
-    numberFrom: f.numberFrom.value,
-    numberTo: f.numberTo.value,
     salesOpen: f.salesOpen.checked,
     beneficiary: f.beneficiary.value,
     iban: f.iban.value,
@@ -784,6 +889,12 @@ function bindEvents() {
     const tile = event.target.closest('.num');
     if (tile) openNumber(Number(tile.dataset.n));
   });
+
+  $('#add-range-form').addEventListener('submit', addRange);
+  $('#range-from').addEventListener('input', (event) => {
+    event.target.dataset.suggested = 'false';
+  });
+  $('#manage-ranges').addEventListener('click', () => openTab('numbers', '#range-to'));
 
   $('#confirm-form').addEventListener('submit', submitConfirm);
   $('#cancel-form').addEventListener('submit', submitCancel);

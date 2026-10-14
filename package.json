@@ -2,7 +2,7 @@
   "name": "lotteria-zampette",
   "version": "1.0.0",
   "private": true,
-  "description": "Sito per la vendita dei biglietti di una lotteria di beneficenza (numeri 801-900) con dashboard amministratore.",
+  "description": "Sito per la vendita dei biglietti di una lotteria di beneficenza (numeri 801-900, ampliabili) con dashboard amministratore.",
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
