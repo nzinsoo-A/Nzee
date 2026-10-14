@@ -4,7 +4,7 @@
 // sincrono. In produzione è il database SQLite del Durable Object di Cloudflare,
 // nei test è node:sqlite.
 
-import { formatCsvDate, formatIban } from './format.js';
+import { formatCsvDate, formatEuro, formatIban } from './format.js';
 
 export const DEFAULT_SETTINGS = Object.freeze({
   title: 'Lotteria Zampette',
@@ -17,6 +17,10 @@ export const DEFAULT_SETTINGS = Object.freeze({
   drawDate: '',
   drawPlace: '',
   ticketPriceCents: 1000,
+  // Offerta pacchetto, es. 3 biglietti a 25 € (spenta finché non la attivate dall'area riservata).
+  bundleEnabled: false,
+  bundleSize: 3,
+  bundlePriceCents: 2500,
   // Gruppi di numeri in vendita ("da" … "a"); se ne possono aggiungere altri dall'area riservata.
   numberRanges: Object.freeze([Object.freeze({ from: 801, to: 900 })]),
   maxPerOrder: 10,
@@ -40,6 +44,9 @@ const SETTINGS_RULES = {
   drawDate: { type: 'drawDate' },
   drawPlace: { type: 'text', max: 160 },
   ticketPriceCents: { type: 'int', min: 1, max: 100000, message: 'Inserisci un prezzo tra 0,01 € e 1.000 €.' },
+  bundleEnabled: { type: 'bool' },
+  bundleSize: { type: 'int', min: 2, max: 20, message: 'Il pacchetto deve avere da 2 a 20 biglietti.' },
+  bundlePriceCents: { type: 'int', min: 1, max: 2000000, message: 'Inserisci il prezzo del pacchetto.' },
   numberRanges: { type: 'ranges' },
   maxPerOrder: { type: 'int', min: 1, max: 20 },
   salesOpen: { type: 'bool' },
@@ -249,7 +256,7 @@ export class RaffleStore {
         data.note,
         JSON.stringify(data.numbers),
         settings.ticketPriceCents,
-        settings.ticketPriceCents * data.numbers.length,
+        priceFor(data.numbers.length, settings),
         source,
         now,
         now,
@@ -496,6 +503,9 @@ export function publicSettings(s) {
     drawDate: s.drawDate,
     drawPlace: s.drawPlace,
     ticketPriceCents: s.ticketPriceCents,
+    bundleEnabled: s.bundleEnabled,
+    bundleSize: s.bundleSize,
+    bundlePriceCents: s.bundlePriceCents,
     numberRanges: s.numberRanges.map((r) => ({ from: r.from, to: r.to })),
     maxPerOrder: s.maxPerOrder,
     salesOpen: s.salesOpen,
@@ -533,6 +543,20 @@ export function paymentInfo(order, settings) {
     amountCents: order.totalCents,
     causale: buildCausale(order, settings),
   };
+}
+
+// Prezzo di N biglietti, applicando l'offerta pacchetto se è attiva.
+// Es. 10 € l'uno e 3 a 25 €: 1 → 10 €, 3 → 25 €, 4 → 35 €, 6 → 50 €.
+export function priceFor(count, settings) {
+  const unit = settings.ticketPriceCents;
+  if (!settings.bundleEnabled) return count * unit;
+  const bundles = Math.floor(count / settings.bundleSize);
+  return bundles * settings.bundlePriceCents + (count - bundles * settings.bundleSize) * unit;
+}
+
+// Quanto si risparmia rispetto al prezzo pieno (0 se nessuna offerta).
+export function savingsCents(order) {
+  return Math.max(0, (order.unitPriceCents || 0) * order.numbers.length - order.totalCents) || 0;
 }
 
 // La causale del bonifico SEPA può contenere al massimo 140 caratteri.
@@ -664,6 +688,15 @@ export function validateSettings(input) {
         out[key] = ranges.sort((a, b) => a.from - b.from);
         break;
       }
+    }
+  }
+  if (out.bundleEnabled && !errors.bundleSize && !errors.bundlePriceCents && !errors.ticketPriceCents) {
+    const fullPrice = out.bundleSize * out.ticketPriceCents;
+    if (out.bundlePriceCents >= fullPrice) {
+      errors.bundlePriceCents = `Per essere un'offerta, ${out.bundleSize} biglietti devono costare meno di ${formatEuro(fullPrice)} (il prezzo pieno).`;
+    }
+    if (!errors.maxPerOrder && out.bundleSize > out.maxPerOrder) {
+      errors.bundleSize = `Si possono prenotare al massimo ${out.maxPerOrder} numeri per volta: il pacchetto non può essere più grande.`;
     }
   }
   if (Object.keys(errors).length) {

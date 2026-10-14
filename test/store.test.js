@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { RaffleStore, AppError, isValidIban, buildCausale } from '../src/store.js';
+import { RaffleStore, AppError, isValidIban, buildCausale, priceFor, savingsCents } from '../src/store.js';
 
 function nodeSqlAdapter(db) {
   return {
@@ -359,4 +359,39 @@ test('eliminazione di un ordine annullato', () => {
   store.deleteOrder(order.code);
   assert.equal(store.listOrders().length, 0);
   expectAppError(() => store.getOrder(order.code), 'not_found');
+});
+
+test('offerta pacchetto: 3 biglietti a prezzo scontato', () => {
+  const store = newStore();
+  assert.equal(store.createOrder(buyer([801, 802, 803])).totalCents, 3000, 'senza offerta si paga il prezzo pieno');
+
+  store.updateSettings({ bundleEnabled: true, bundleSize: '3', bundlePriceCents: 2500 });
+  const pub = store.publicState().settings;
+  assert.equal(pub.bundleEnabled, true);
+  assert.equal(pub.bundleSize, 3);
+  assert.equal(pub.bundlePriceCents, 2500);
+
+  const totals = [1, 2, 3, 4, 6, 7].map((count, i) => {
+    const numbers = Array.from({ length: count }, (_, k) => 810 + i * 10 + k);
+    return store.createOrder(buyer(numbers)).totalCents;
+  });
+  assert.deepEqual(totals, [1000, 2000, 2500, 3500, 5000, 6000]);
+
+  const order = store.listOrders()[0];
+  assert.equal(savingsCents(order), 1000, '7 biglietti: due pacchetti, si risparmiano 10 €');
+  assert.equal(priceFor(5, store.getSettings()), 4500);
+});
+
+test("offerta pacchetto: deve essere davvero un'offerta", () => {
+  const store = newStore();
+  const field = (patch) => expectAppError(() => store.updateSettings(patch), 'invalid_settings').details.fields;
+  assert.match(field({ bundleEnabled: true, bundleSize: 3, bundlePriceCents: 3000 }).bundlePriceCents, /meno di 30,00/);
+  assert.ok(field({ bundleEnabled: true, bundleSize: 1, bundlePriceCents: 500 }).bundleSize);
+  assert.match(
+    field({ bundleEnabled: true, bundleSize: 5, bundlePriceCents: 4000, maxPerOrder: 4 }).bundleSize,
+    /al massimo 4 numeri/,
+  );
+  // spenta, non viene controllata
+  store.updateSettings({ bundleEnabled: false, bundlePriceCents: 9999 });
+  assert.equal(store.createOrder(buyer([801, 802, 803])).totalCents, 3000);
 });

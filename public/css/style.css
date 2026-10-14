@@ -914,6 +914,17 @@ textarea {
   margin: 0;
 }
 
+.notice.is-offer {
+  border-color: transparent;
+  background: var(--pink-600);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.notice.is-offer strong {
+  font-weight: 900;
+}
+
 .notice a {
   color: inherit;
 }
@@ -1352,6 +1363,12 @@ textarea {
   color: var(--pink-700);
 }
 
+.selection-hint {
+  color: var(--pink-700);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
 .selection-list {
   overflow: hidden;
   color: var(--ink-2);
@@ -1527,6 +1544,24 @@ dialog.sheet[open] {
   padding: 14px 16px;
   border-radius: var(--radius);
   background: var(--pink-50);
+  font-weight: 700;
+}
+
+.summary-offer {
+  display: block;
+  color: var(--green-700);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.summary-amount {
+  text-align: right;
+}
+
+.summary-full {
+  display: block;
+  color: var(--ink-3);
+  font-size: 0.9rem;
   font-weight: 700;
 }
 
@@ -2005,6 +2040,13 @@ textarea.input {
 .pay-row .amount {
   color: var(--pink-700);
   font: 600 1.7rem/1.1 var(--font-display);
+}
+
+.saving {
+  display: block;
+  margin-top: 2px;
+  color: var(--green-700);
+  font: 800 0.85rem/1.3 var(--font-body);
 }
 
 .copy-btn {
@@ -2721,6 +2763,20 @@ textarea.input {
 
 #range-error {
   margin: 12px 0 0;
+}
+
+.offer-box {
+  margin-bottom: 14px;
+}
+
+.offer-box .switch-field {
+  margin-bottom: 10px;
+}
+
+#bundle-preview {
+  margin: -4px 0 4px;
+  color: var(--pink-800);
+  font-weight: 800;
 }
 
 .ranges-summary {

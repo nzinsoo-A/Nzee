@@ -29,9 +29,29 @@ Design minimale bianco e rosa, con tante zampette. Funziona bene da telefono e d
   mettere in vendita nuovi numeri, anche non consecutivi (es. da 1001 a 1050). Un gruppo di numeri si può togliere
   finché nessuno dei suoi numeri è stato prenotato.
 - **Impostazioni** modificabili senza toccare il codice: titolo, descrizione, premi, data e luogo dell'estrazione,
-  prezzo, dati bancari, email di contatto, apertura/chiusura delle vendite.
+  prezzo, **offerta pacchetto** (es. 3 biglietti a 25 €, lo sconto si applica da solo), dati bancari, email di
+  contatto, apertura/chiusura delle vendite.
 - Esportazione in Excel (CSV) di tutti gli ordini, utile per l'estrazione.
 - Email di prova, reinvio delle email, eliminazione degli ordini annullati (es. quelli di prova).
+
+---
+
+## Guida rapida per gli organizzatori
+
+Apri l'indirizzo del sito aggiungendo `/admin` in fondo, scrivi la password e poi:
+
+| Cosa vuoi fare                   | Dove                                                                               |
+| -------------------------------- | ---------------------------------------------------------------------------------- |
+| Cambiare il prezzo del biglietto | **Impostazioni** → Biglietti → _Prezzo di un biglietto_                            |
+| Offerta, es. 3 biglietti a 25 €  | **Impostazioni** → Biglietti → accendi _Offerta pacchetto_ → scrivi **3** e **25** |
+| Inserire l'IBAN                  | **Impostazioni** → Dati per il bonifico → _Intestatario del conto_ e _IBAN_        |
+| Cambiare la data dell'estrazione | **Impostazioni** → La lotteria → _Data e ora dell'estrazione_ (e il luogo)         |
+| Inserire i premi                 | **Impostazioni** → La lotteria → _Premi_, uno per riga                             |
+| Aggiungere altri numeri          | **Numeri** → _Aggiungi altre caselle_ → Da … A … → **Aggiungi numeri**             |
+| Confermare un bonifico arrivato  | **Ordini** → **Conferma pagamento**                                                |
+| Rimettere in vendita dei numeri  | **Ordini** → **Annulla**                                                           |
+
+Dopo ogni modifica nelle Impostazioni premi **Salva impostazioni** (in basso a destra): il sito si aggiorna subito.
 
 ---
 
@@ -68,8 +88,8 @@ Da qui in poi, ogni modifica che arriva sul ramo `main` viene pubblicata automat
 
 Nella pagina del Worker: **Settings** → **Variables and Secrets** → **Add**:
 
-| Nome             | Tipo   | Valore                                                 |
-| ---------------- | ------ | ------------------------------------------------------ |
+| Nome             | Tipo   | Valore                                                |
+| ---------------- | ------ | ----------------------------------------------------- |
 | `ADMIN_PASSWORD` | Secret | una password lunga (almeno 12 caratteri), solo vostra |
 
 Salva con **Deploy**. Ora puoi entrare in `https://…workers.dev/admin`.

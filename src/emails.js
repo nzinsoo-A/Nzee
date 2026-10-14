@@ -1,7 +1,7 @@
 // Testi delle email (HTML + testo semplice).
 
 import { escapeHtml as e, firstName, formatDateTime, formatDrawDate, formatEuro, numbersLabel } from './format.js';
-import { paymentInfo } from './store.js';
+import { paymentInfo, savingsCents } from './store.js';
 
 const COLORS = {
   pink: '#d23572',
@@ -29,6 +29,19 @@ export function buildEmail(kind, { order, settings, origin, message = '', reason
   return build({ order, settings, origin, message: message.trim(), reason: reason.trim() });
 }
 
+// "25,00 €" oppure "25,00 € (offerta: risparmi 5,00 €)"
+function amountText(order) {
+  const saved = savingsCents(order);
+  return `${formatEuro(order.totalCents)}${saved ? ` (offerta: risparmi ${formatEuro(saved)})` : ''}`;
+}
+
+function amountHtml(order) {
+  const saved = savingsCents(order);
+  return `<strong>${e(formatEuro(order.totalCents))}</strong>${
+    saved ? ` <span style="color:#18703f;font-weight:700">offerta: risparmi ${e(formatEuro(saved))}</span>` : ''
+  }`;
+}
+
 function reservation({ order, settings, origin }) {
   const pay = paymentInfo(order, settings);
   const label = numbersLabel(order.numbers);
@@ -38,7 +51,7 @@ function reservation({ order, settings, origin }) {
   const paymentHtml = pay.configured
     ? `<p style="margin:0 0 12px">Per completare l'acquisto effettua un <strong>bonifico bancario</strong> con questi dati:</p>
        ${detailsTable([
-         ['Importo', `<strong>${e(formatEuro(pay.amountCents))}</strong>`],
+         ['Importo', amountHtml(order)],
          ['Intestatario', e(pay.beneficiary)],
          [
            'IBAN',
@@ -49,9 +62,7 @@ function reservation({ order, settings, origin }) {
          ['Causale', `<strong>${e(pay.causale)}</strong>`],
        ])}
        ${pay.notes ? paragraph(e(pay.notes)) : ''}`
-    : paragraph(
-        `Ti invieremo a breve i dati per effettuare il pagamento di <strong>${e(formatEuro(pay.amountCents))}</strong>.`,
-      );
+    : paragraph(`Ti invieremo a breve i dati per effettuare il pagamento di ${amountHtml(order)}.`);
 
   const html = layout({
     settings,
@@ -78,7 +89,7 @@ function reservation({ order, settings, origin }) {
     pay.configured
       ? [
           "Per completare l'acquisto effettua un bonifico bancario:",
-          `- Importo: ${formatEuro(pay.amountCents)}`,
+          `- Importo: ${amountText(order)}`,
           `- Intestatario: ${pay.beneficiary}`,
           `- IBAN: ${pay.ibanFormatted}`,
           pay.bankName && `- Banca: ${pay.bankName}`,
@@ -86,7 +97,7 @@ function reservation({ order, settings, origin }) {
           `- Causale: ${pay.causale}`,
           pay.notes && `\n${pay.notes}`,
         ]
-      : `Ti invieremo a breve i dati per il pagamento di ${formatEuro(pay.amountCents)}.`,
+      : `Ti invieremo a breve i dati per il pagamento di ${amountText(order)}.`,
     BLANK,
     "Appena verificheremo l'accredito riceverai un'email di conferma.",
     `Il tuo ordine: ${link}`,
@@ -183,7 +194,7 @@ function adminNew({ order, settings, origin }) {
         ['Nome', e(order.name)],
         ['Email', `<a href="mailto:${e(order.email)}" style="color:${COLORS.pinkDark}">${e(order.email)}</a>`],
         order.phone && ['Telefono', e(order.phone)],
-        ['Importo', `<strong>${e(formatEuro(order.totalCents))}</strong>`],
+        ['Importo', amountHtml(order)],
         ['Causale attesa', e(paymentInfo(order, settings).causale)],
         order.note && ['Messaggio', e(order.note)],
         ['Data', e(formatDateTime(order.createdAt))],
@@ -199,7 +210,7 @@ function adminNew({ order, settings, origin }) {
     `Nome: ${order.name}`,
     `Email: ${order.email}`,
     order.phone && `Telefono: ${order.phone}`,
-    `Importo: ${formatEuro(order.totalCents)}`,
+    `Importo: ${amountText(order)}`,
     order.note && `Messaggio: ${order.note}`,
     BLANK,
     `Dashboard: ${origin}/admin`,

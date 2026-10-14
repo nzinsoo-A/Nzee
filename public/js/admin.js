@@ -9,7 +9,9 @@ import {
   h,
   icon,
   numberTiles,
+  orderSavings,
   plural,
+  priceFor,
   setLoading,
   setupHeader,
   startPolling,
@@ -369,7 +371,12 @@ function orderCard(o) {
           ),
         ),
       ),
-      h('div', { class: 'order-amount' }, euro(o.totalCents)),
+      h(
+        'div',
+        { class: 'order-amount' },
+        euro(o.totalCents),
+        orderSavings(o) > 0 && h('small', { class: 'saving' }, `offerta −${euro(orderSavings(o))}`),
+      ),
     ),
     o.note && h('p', { class: 'order-note' }, `Messaggio: ${o.note}`),
     o.status === 'cancelled' &&
@@ -708,17 +715,27 @@ function fillSettings() {
   }
   f.elements.iban.value = (s.iban || '').replace(/(.{4})/g, '$1 ').trim();
   f.elements.ticketPrice.value = (s.ticketPriceCents / 100).toFixed(2);
+  f.elements.bundleEnabled.checked = s.bundleEnabled;
+  f.elements.bundleSize.value = String(s.bundleSize);
+  f.elements.bundlePrice.value = (s.bundlePriceCents / 100).toFixed(2);
   f.elements.salesOpen.checked = s.salesOpen;
   f.elements.notifyAdmin.checked = s.notifyAdmin;
   if (!$('#test-email-to').value) $('#test-email-to').value = s.contactEmail || '';
   clearSettingsErrors();
   updateCausalePreview();
+  updateBundlePreview();
   setDirty(false);
+}
+
+// "10,50" o "10.50" -> 1050 centesimi (se non è un numero lascia il testo: ci pensa il server a segnalarlo)
+function toCents(value) {
+  const cents = Math.round(parseFloat(String(value).replace(',', '.')) * 100);
+  return Number.isFinite(cents) ? cents : value;
 }
 
 function readSettings() {
   const f = $('#settings-form').elements;
-  const price = Math.round(parseFloat(String(f.ticketPrice.value).replace(',', '.')) * 100);
+  const price = toCents(f.ticketPrice.value);
   return {
     title: f.title.value,
     organization: f.organization.value,
@@ -727,7 +744,10 @@ function readSettings() {
     prizes: f.prizes.value,
     drawDate: f.drawDate.value,
     drawPlace: f.drawPlace.value,
-    ticketPriceCents: Number.isFinite(price) ? price : f.ticketPrice.value,
+    ticketPriceCents: price,
+    bundleEnabled: f.bundleEnabled.checked,
+    bundleSize: f.bundleSize.value,
+    bundlePriceCents: toCents(f.bundlePrice.value),
     maxPerOrder: f.maxPerOrder.value,
     salesOpen: f.salesOpen.checked,
     beneficiary: f.beneficiary.value,
@@ -739,6 +759,33 @@ function readSettings() {
     contactEmail: f.contactEmail.value,
     notifyAdmin: f.notifyAdmin.checked,
   };
+}
+
+// Mostra subito quanto si paga con il prezzo e l'offerta scritti nel modulo.
+function updateBundlePreview() {
+  const f = $('#settings-form').elements;
+  const enabled = f.bundleEnabled.checked;
+  $('#bundle-fields').hidden = !enabled;
+  const s = {
+    ticketPriceCents: toCents(f.ticketPrice.value),
+    bundleEnabled: enabled,
+    bundleSize: Number(f.bundleSize.value),
+    bundlePriceCents: toCents(f.bundlePrice.value),
+  };
+  const valid =
+    Number.isInteger(s.ticketPriceCents) &&
+    Number.isInteger(s.bundleSize) &&
+    s.bundleSize >= 2 &&
+    Number.isInteger(s.bundlePriceCents);
+  if (!enabled || !valid) {
+    $('#bundle-preview').textContent = '';
+    return;
+  }
+  const examples = [1, s.bundleSize, s.bundleSize + 1, s.bundleSize * 2];
+  $('#bundle-preview').textContent =
+    'Esempi: ' +
+    examples.map((n) => `${plural(n, 'biglietto', 'biglietti')} ${euro(priceFor(n, s))}`).join(' · ') +
+    ` (senza offerta ${s.bundleSize} biglietti costerebbero ${euro(s.bundleSize * s.ticketPriceCents)})`;
 }
 
 function updateCausalePreview() {
@@ -915,13 +962,18 @@ function bindEvents() {
   settingsForm.addEventListener('input', (event) => {
     setDirty(true);
     if (event.target.id === 's-causalePrefix') updateCausalePreview();
+    if (['s-price', 's-bundleSize', 's-bundlePrice', 's-bundleEnabled'].includes(event.target.id))
+      updateBundlePreview();
     const field = event.target.closest('.field');
     if (field?.classList.contains('has-error')) {
       field.classList.remove('has-error');
       $('.field-error', field)?.remove();
     }
   });
-  settingsForm.addEventListener('change', () => setDirty(true));
+  settingsForm.addEventListener('change', (event) => {
+    setDirty(true);
+    if (event.target.id === 's-bundleEnabled') updateBundlePreview();
+  });
   $('#test-email-to').addEventListener('input', (event) => event.stopPropagation());
   $('#test-email-to').addEventListener('change', (event) => event.stopPropagation());
   $('#settings-reset').addEventListener('click', () => {

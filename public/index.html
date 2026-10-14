@@ -79,7 +79,7 @@
                 <span class="fact-icon"
                   ><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#ticket" /></svg
                 ></span>
-                <div><strong data-bind="price">10,00 €</strong><span>a biglietto</span></div>
+                <div><strong data-bind="price">10,00 €</strong><span data-bind="price-sub">a biglietto</span></div>
               </div>
               <div class="fact">
                 <span class="fact-icon"
@@ -161,6 +161,10 @@
           </div>
 
           <div id="my-orders" class="my-orders" hidden></div>
+          <div id="offer" class="notice is-offer" hidden>
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#gift" /></svg>
+            <p data-bind="offer-text"></p>
+          </div>
           <div id="sales-closed" class="notice" hidden>
             <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#info" /></svg>
             <p>Le vendite dei biglietti sono chiuse. Grazie a tutti per il sostegno!</p>
@@ -265,6 +269,7 @@
       <div class="selection-info">
         <div class="selection-count" id="selection-count"></div>
         <div class="selection-list" id="selection-list"></div>
+        <div class="selection-hint" id="selection-hint" hidden></div>
       </div>
       <button type="button" class="btn" id="open-checkout">
         Continua
@@ -285,8 +290,14 @@
       <div class="sheet-body">
         <div class="chips" id="checkout-chips"></div>
         <div class="summary">
-          <span id="checkout-count"></span>
-          <span class="summary-total" id="checkout-total"></span>
+          <span>
+            <span id="checkout-count"></span>
+            <span class="summary-offer" id="checkout-offer" hidden></span>
+          </span>
+          <span class="summary-amount">
+            <s class="summary-full" id="checkout-full" hidden></s>
+            <span class="summary-total" id="checkout-total"></span>
+          </span>
         </div>
 
         <div class="notice is-error" id="checkout-error" hidden>

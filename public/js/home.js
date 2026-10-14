@@ -14,8 +14,10 @@ import {
   loadMyOrders,
   numberGroups,
   numberTiles,
+  offerLabel,
   pageUrl,
   plural,
+  priceFor,
   rememberOrder,
   setLoading,
   setText,
@@ -97,6 +99,14 @@ function renderInfo() {
   setText('[data-bind="tagline"]', s.tagline);
   setText('[data-bind="description"]', s.description);
   setText('[data-bind="price"]', euro(s.ticketPriceCents));
+  setText('[data-bind="price-sub"]', s.bundleEnabled ? `a biglietto · ${offerLabel(s)}` : 'a biglietto');
+  $('#offer').hidden = !s.bundleEnabled || !s.salesOpen;
+  if (s.bundleEnabled) {
+    $('[data-bind="offer-text"]').replaceChildren(
+      h('strong', {}, `Offerta: ${offerLabel(s)}`),
+      ` invece di ${euro(s.bundleSize * s.ticketPriceCents)}. Lo sconto si applica da solo quando scegli ${s.bundleSize} numeri (o un multiplo).`,
+    );
+  }
   const groups = numberGroups(s.numberRanges);
   setText(
     '[data-bind="range"]',
@@ -244,12 +254,24 @@ function updateSelection() {
   bar.setAttribute('aria-hidden', String(!visible));
   bar.inert = !visible;
   if (!visible) return;
-  const total = count * state.settings.ticketPriceCents;
+  const s = state.settings;
+  const total = priceFor(count, s);
+  const saved = count * s.ticketPriceCents - total;
   $('#selection-count').replaceChildren(
     `${plural(count, 'numero scelto', 'numeri scelti')} · `,
     h('strong', {}, euro(total)),
+    saved > 0 ? ` (risparmi ${euro(saved)})` : '',
   );
   $('#selection-list').textContent = numbers.join(' · ');
+
+  // Suggerimento: manca un numero per completare l'offerta.
+  const hint = $('#selection-hint');
+  const missing = s.bundleEnabled ? s.bundleSize - (count % s.bundleSize) : 0;
+  const showHint = s.bundleEnabled && missing > 0 && missing <= 2 && count + missing <= s.maxPerOrder;
+  hint.hidden = !showHint;
+  if (showHint) {
+    hint.textContent = `Scegline ${missing === 1 ? 'ancora 1' : `altri ${missing}`}: con l'offerta ${offerLabel(s)}!`;
+  }
 }
 
 // ------------------------------------------------------------------ prenotazione
@@ -293,9 +315,16 @@ function renderCheckout() {
       ),
     ),
   );
-  const price = state.settings.ticketPriceCents;
-  $('#checkout-count').textContent = `${plural(numbers.length, 'biglietto', 'biglietti')} × ${euro(price)}`;
-  $('#checkout-total').textContent = euro(numbers.length * price);
+  const s = state.settings;
+  const full = numbers.length * s.ticketPriceCents;
+  const total = priceFor(numbers.length, s);
+  $('#checkout-count').textContent =
+    `${plural(numbers.length, 'biglietto', 'biglietti')} × ${euro(s.ticketPriceCents)}`;
+  $('#checkout-total').textContent = euro(total);
+  $('#checkout-full').textContent = euro(full);
+  $('#checkout-full').hidden = total === full;
+  $('#checkout-offer').textContent = `Offerta ${offerLabel(s)}: risparmi ${euro(full - total)}`;
+  $('#checkout-offer').hidden = total === full;
 }
 
 function clearErrors() {

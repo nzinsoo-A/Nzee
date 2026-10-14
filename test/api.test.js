@@ -366,3 +366,26 @@ test('eliminazione definitiva: solo per gli ordini annullati', async () => {
   assert.equal((await api(`/api/orders/${data.code}?t=${data.token}`)).status, 404);
   assert.equal((await client(site.url)(`/api/admin/orders/${data.code}`, { method: 'DELETE', body: {} })).status, 401);
 });
+
+test('offerta pacchetto: 3 biglietti scontati, anche nell’email', async () => {
+  const on = await admin('/api/admin/settings', {
+    method: 'PUT',
+    body: { bundleEnabled: true, bundleSize: 3, bundlePriceCents: 2500 },
+  });
+  assert.equal(on.status, 200, JSON.stringify(on.data));
+  assert.equal((await api('/api/public')).data.settings.bundlePriceCents, 2500);
+
+  const res = await book([891, 892, 893], { email: 'offerta@example.com' });
+  assert.equal(res.status, 201);
+  const view = await api(`/api/orders/${res.data.code}?t=${res.data.token}`);
+  assert.equal(view.data.totalCents, 2500);
+  assert.equal(view.data.payment.amountCents, 2500);
+  const mail = await mailbox.waitFor((m) => m.envelopeTo.includes('offerta@example.com'));
+  assert.ok(mail.html.includes('risparmi 5,00'), "l'email mostra lo sconto");
+
+  const bad = await admin('/api/admin/settings', { method: 'PUT', body: { bundlePriceCents: 3500 } });
+  assert.equal(bad.status, 400);
+  assert.ok(bad.data.error.details.fields.bundlePriceCents);
+
+  await admin('/api/admin/settings', { method: 'PUT', body: { bundleEnabled: false } });
+});

@@ -107,6 +107,21 @@ export function timeAgo(ms) {
 
 export const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
+// ------------------------------------------------------------------ prezzi e offerta pacchetto
+
+// Prezzo di N biglietti con l'eventuale offerta (stessa regola del server).
+export function priceFor(count, s) {
+  if (!s.bundleEnabled) return count * s.ticketPriceCents;
+  const bundles = Math.floor(count / s.bundleSize);
+  return bundles * s.bundlePriceCents + (count - bundles * s.bundleSize) * s.ticketPriceCents;
+}
+
+// "3 biglietti a 25,00 €"
+export const offerLabel = (s) => `${s.bundleSize} biglietti a ${euro(s.bundlePriceCents)}`;
+
+// Risparmio di un ordine rispetto al prezzo pieno (0 se non c'è offerta).
+export const orderSavings = (o) => Math.max(0, o.unitPriceCents * o.numbers.length - o.totalCents) || 0;
+
 // ------------------------------------------------------------------ gruppi di numeri
 
 export function inRanges(n, ranges) {

@@ -319,6 +319,51 @@ test("l'admin aggiunge nuove caselle (da … a …) e le toglie", async () => {
   await page.context().close();
 });
 
+test("offerta pacchetto: l'admin la attiva, chi compra 3 numeri paga meno", async () => {
+  const page = await newPage(DESKTOP);
+  await page.goto(`${site.url}/admin`);
+  await page.fill('#password', PASSWORD);
+  await page.click('#login-submit');
+  await page.waitForSelector('#dash-view:not([hidden])');
+  await page.click('[data-tab="settings"]');
+  assert.equal(await page.isVisible('#bundle-fields'), false, "i campi dell'offerta compaiono solo se attiva");
+  await page.check('#s-bundleEnabled');
+  await page.fill('#s-bundleSize', '3');
+  await page.fill('#s-bundlePrice', '25');
+  await page.waitForFunction(() => document.querySelector('#bundle-preview').textContent.includes('3 biglietti 25,00'));
+  await page.locator('.offer-box').scrollIntoViewIfNeeded();
+  await shot(page, 'admin-offerta');
+  await page.click('#settings-save');
+  await page.waitForSelector('.toast.is-success');
+  await page.context().close();
+
+  const buyer = await newPage(MOBILE);
+  await buyer.goto(site.url);
+  await buyer.waitForSelector('#offer:not([hidden])');
+  assert.match(await buyer.textContent('#offer'), /Offerta: 3 biglietti a 25,00/);
+  await buyer.locator('.num[data-n="861"]').tap();
+  await buyer.locator('.num[data-n="862"]').tap();
+  await buyer.waitForSelector('#selection-hint:not([hidden])');
+  assert.match(await buyer.textContent('#selection-hint'), /Scegline ancora 1/);
+  await buyer.locator('.num[data-n="863"]').tap();
+  await buyer.waitForFunction(() => document.querySelector('#selection-count').textContent.includes('risparmi 5,00'));
+  assert.match(await buyer.textContent('#selection-count'), /3 numeri scelti · 25,00/);
+  await buyer.locator('#numeri').scrollIntoViewIfNeeded();
+  await shot(buyer, 'offerta-selezione-mobile');
+  await buyer.locator('#open-checkout').tap();
+  await buyer.waitForSelector('#checkout-full:not([hidden])');
+  assert.match(await buyer.textContent('#checkout-full'), /30,00/);
+  assert.match(await buyer.textContent('#checkout-total'), /25,00/);
+  await buyer.fill('#f-name', 'Sara Blu');
+  await buyer.fill('#f-email', 'sara@example.com');
+  await buyer.check('#f-privacy');
+  await shot(buyer, 'offerta-conferma-mobile');
+  await Promise.all([buyer.waitForURL(/\/ordine\?c=/), buyer.locator('#checkout-submit').tap()]);
+  await buyer.waitForSelector('.saving');
+  assert.match(await buyer.textContent('.pay-row .amount'), /25,00.*risparmi 5,00/s);
+  await buyer.context().close();
+});
+
 test('nessun errore JavaScript nelle pagine', () => {
   assert.deepEqual(pageErrors, []);
 });

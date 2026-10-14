@@ -10,6 +10,7 @@ import {
   forgetOrder,
   h,
   icon,
+  orderSavings,
   pageUrl,
   pawBurst,
   rememberOrder,
@@ -167,7 +168,14 @@ function paymentCard(order) {
     h(
       'dl',
       { class: 'pay-list' },
-      row('Importo', euro(p.amountCents), { copy: (p.amountCents / 100).toFixed(2).replace('.', ','), amount: true }),
+      row(
+        'Importo',
+        [
+          euro(p.amountCents),
+          orderSavings(order) > 0 && h('small', { class: 'saving' }, `Offerta: risparmi ${euro(orderSavings(order))}`),
+        ],
+        { copy: (p.amountCents / 100).toFixed(2).replace('.', ','), amount: true },
+      ),
       row('Intestatario', p.beneficiary),
       row('IBAN', p.ibanFormatted, { copy: p.iban, mono: true }),
       p.bankName && row('Banca', p.bankName, { copy: '' }),
@@ -267,7 +275,7 @@ function summaryCard(order) {
       meta('Intestata a', order.name),
       meta('Email', order.email),
       meta(order.numbers.length === 1 ? 'Numero' : 'Numeri', order.numbers.join(', ')),
-      meta('Totale', euro(order.totalCents)),
+      meta('Totale', `${euro(order.totalCents)}${orderSavings(order) > 0 ? ' (con offerta)' : ''}`),
       meta('Prenotata il', dateTime(order.createdAt)),
     ),
   );
