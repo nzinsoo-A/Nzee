@@ -1,0 +1,134 @@
+/* Struttura del video: palco 1920×1080, schermo del browser in alto, fascia dei sottotitoli in basso. */
+
+@font-face { font-family: "Selawik"; src: url(font/selawkl.woff2) format("woff2"); font-weight: 300; }
+@font-face { font-family: "Selawik"; src: url(font/selawksl.woff2) format("woff2"); font-weight: 350; }
+@font-face { font-family: "Selawik"; src: url(font/selawk.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "Selawik"; src: url(font/selawksb.woff2) format("woff2"); font-weight: 600; }
+@font-face { font-family: "Selawik"; src: url(font/selawkb.woff2) format("woff2"); font-weight: 700; }
+
+:root {
+  --blu-ms: #0f6cbd;
+  --blu-ms-scuro: #115ea3;
+  --testo: #242424;
+  --testo-2: #616161;
+  --bordo: #e0e0e0;
+  --accento: #ffb900;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0c0e13; }
+body { -webkit-font-smoothing: antialiased; }
+
+#palco {
+  position: relative; width: 1920px; height: 1080px; overflow: hidden;
+  background: #0c0e13; font-family: "Selawik", "Segoe UI", sans-serif; color: var(--testo);
+}
+
+/* ---------- Schermo (con la «telecamera» che zooma) ---------- */
+#cornice { position: absolute; left: 0; top: 0; width: 1920px; height: 944px; overflow: hidden; background: #000; }
+#camera { position: absolute; left: 0; top: 0; width: 1920px; height: 944px; transform-origin: 0 0; }
+#schermo {
+  position: absolute; left: 0; top: 0; zoom: 1.4;
+  width: 1371.43px; height: 674.29px; overflow: hidden; background: #1f1f1f;
+}
+.ic { display: inline-flex; width: 20px; height: 20px; flex: none; }
+.ic svg { width: 100%; height: 100%; display: block; }
+
+/* ---------- Browser (stile Microsoft Edge, tema scuro) ---------- */
+#b-schede { position: absolute; left: 0; top: 0; right: 0; height: 32px; background: #1b1b1b; display: flex; align-items: flex-end; padding-left: 8px; gap: 2px; }
+.b-scheda {
+  position: relative; height: 28px; width: 230px; display: flex; align-items: center; gap: 8px;
+  padding: 0 10px; border-radius: 8px 8px 0 0; color: #c9c9c9; font-size: 12px;
+}
+.b-scheda.attiva { background: #2c2c2c; color: #f0f0f0; }
+.b-scheda .fav { width: 16px; height: 16px; border-radius: 3px; flex: none; display: grid; place-items: center; }
+.b-scheda .tit { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.b-scheda .chiudi { width: 14px; height: 14px; color: #bdbdbd; }
+.b-nuova { width: 28px; height: 28px; display: grid; place-items: center; color: #c9c9c9; }
+.b-nuova .ic { width: 16px; height: 16px; }
+
+#b-barra { position: absolute; left: 0; top: 32px; right: 0; height: 38px; background: #2c2c2c; display: flex; align-items: center; gap: 4px; padding: 0 8px; color: #e8e8e8; }
+#b-barra > .ic { width: 18px; height: 18px; margin: 0 7px; }
+#b-url {
+  flex: 1; height: 28px; border-radius: 14px; background: #1c1c1c; display: flex; align-items: center;
+  gap: 8px; padding: 0 12px; font-size: 13.5px; color: #a9a9a9; margin: 0 6px; border: 1px solid transparent;
+}
+#b-url.attivo { border-color: #5aa0e6; background: #161616; }
+#b-url .ic { width: 13px; height: 13px; color: #cfcfcf; margin-right: 6px; vertical-align: -1px; }
+#b-url-testo { display: flex; align-items: center; white-space: nowrap; }
+#b-url .dom { color: #f2f2f2; }
+#b-url .sel { background: #2f5fa0; color: #fff; }
+#b-carica { position: absolute; left: 0; top: 68px; height: 2px; background: #4ba0f0; width: 0; z-index: 5; }
+#b-destra { display: flex; align-items: center; gap: 14px; margin-left: 6px; color: #dcdcdc; }
+#b-destra .ic { width: 18px; height: 18px; }
+#b-profilo { width: 22px; height: 22px; border-radius: 50%; background: #5b5fc7; color: #fff; font-size: 10px; display: grid; place-items: center; font-weight: 600; }
+
+#vista { position: absolute; left: 0; top: 70px; width: 1371.43px; height: 604.29px; overflow: hidden; background: #fff; }
+.pagina { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; }
+
+/* ---------- Cursore e clic ---------- */
+#strato-cursore { position: absolute; left: 0; top: 0; width: 1920px; height: 944px; pointer-events: none; }
+#cursore { position: absolute; left: 0; top: 0; width: 34px; height: 34px; transform-origin: 0 0; z-index: 3; }
+#cursore svg { position: absolute; left: 0; top: 0; filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.45)); }
+#cursore .mano { left: -11px; top: -2px; }
+.onda {
+  position: absolute; width: 104px; height: 104px; margin: -52px 0 0 -52px; border-radius: 50%;
+  border: 4px solid rgba(255, 185, 0, 1); background: rgba(255, 185, 0, .32); opacity: 0; z-index: 2;
+}
+
+/* ---------- Notifica del codice (notifica di sistema, fuori dallo zoom) ---------- */
+#notifica {
+  position: absolute; right: 26px; bottom: 26px; width: 440px; background: #2b2b2b; color: #fff; border-radius: 12px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.5); padding: 18px 20px; display: flex; gap: 16px; z-index: 20;
+  border: 1px solid #3d3d3d; opacity: 0; visibility: hidden; font-size: 18px;
+}
+#notifica .icona { width: 48px; height: 48px; border-radius: 9px; background: #0f6cbd; display: grid; place-items: center; flex: none; }
+#notifica .icona .ic { width: 28px; height: 28px; color: #fff; }
+#notifica .app { color: #bdbdbd; font-size: 16px; }
+#notifica .ogg { font-weight: 600; margin: 3px 0; }
+#notifica .cod { font-size: 18px; color: #e6e6e6; }
+#notifica .cod b { font-size: 22px; letter-spacing: 1.5px; color: #fff; }
+
+/* ---------- Fascia dei sottotitoli ---------- */
+#fascia {
+  position: absolute; left: 0; top: 944px; width: 1920px; height: 136px; background: #0c0e13;
+  border-top: 1px solid rgba(255,255,255,.08); font-family: "Inter", sans-serif;
+}
+#capitolo {
+  position: absolute; left: 36px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 12px;
+  color: #e9edf5; font-size: 19px; font-weight: 600; letter-spacing: .2px; opacity: 0;
+}
+#capitolo .num {
+  min-width: 44px; height: 30px; padding: 0 10px; border-radius: 15px; background: #0f6cbd; color: #fff;
+  display: grid; place-items: center; font-size: 15px; font-weight: 700; letter-spacing: .5px;
+}
+#capitolo .tit { max-width: 230px; line-height: 1.15; }
+#sottotitolo {
+  position: absolute; left: 340px; right: 340px; top: 50%; transform: translateY(-50%);
+  color: #fff; font-size: 35px; font-weight: 600; line-height: 1.27; text-align: center;
+  text-wrap: balance; opacity: 0; text-shadow: 0 2px 6px rgba(0,0,0,.6);
+}
+#sottotitolo .ui { color: #ffd257; }
+
+/* ---------- Cartelli iniziale e finale ---------- */
+.cartello {
+  position: absolute; left: 0; top: 0; width: 1920px; height: 944px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: "Inter", sans-serif; color: #fff; opacity: 0; visibility: hidden; z-index: 30;
+  background: radial-gradient(1200px 700px at 30% 20%, #1d3a66 0%, rgba(29,58,102,0) 60%),
+              radial-gradient(900px 600px at 80% 90%, #3b2a5c 0%, rgba(59,42,92,0) 60%), #0c0e13;
+}
+.cartello .scudo { width: 132px; height: 132px; margin-bottom: 34px; }
+.cartello h1 { font-size: 78px; font-weight: 800; letter-spacing: -1.5px; text-align: center; line-height: 1.05; }
+.cartello h1 span { color: #4ba0f0; }
+.cartello .sotto { margin-top: 22px; font-size: 34px; font-weight: 500; color: #c6d0e0; }
+.cartello .nota { position: absolute; bottom: 44px; font-size: 20px; color: #8a96aa; }
+.cartello .lista { display: flex; flex-direction: column; gap: 22px; margin-top: 34px; }
+.cartello .voce { display: flex; align-items: center; gap: 22px; font-size: 40px; font-weight: 600; }
+.cartello .spunta { width: 52px; height: 52px; border-radius: 50%; background: #13a10e; display: grid; place-items: center; flex: none; }
+.cartello .spunta svg { width: 30px; height: 30px; }
+.cartello .consiglio {
+  margin-top: 46px; padding: 18px 30px; border-radius: 14px; background: rgba(255,185,0,.12); border: 1px solid rgba(255,185,0,.45);
+  color: #ffd257; font-size: 30px; font-weight: 600; display: flex; gap: 14px; align-items: center;
+}
+
+#nero { position: absolute; inset: 0; background: #000; opacity: 0; z-index: 50; pointer-events: none; }

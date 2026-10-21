@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Proteggi il tuo account Outlook</title>
+<link rel="stylesheet" href="stile.css">
+<link rel="stylesheet" href="pagine.css">
+<script src="icone.js"></script>
+<script src="pagine.js"></script>
+</head>
+<body>
+<div id="palco">
+  <div id="cornice">
+    <div id="camera">
+      <div id="schermo">
+        <div id="b-schede"></div>
+        <div id="b-barra">
+          <i class="ic" data-ic="arrow_left_20_regular"></i>
+          <i class="ic" data-ic="arrow_clockwise_20_regular"></i>
+          <div id="b-url"><span id="b-url-testo"></span></div>
+          <div id="b-destra">
+            <i class="ic" data-ic="star_20_regular"></i>
+            <i class="ic" data-ic="split_vertical_20_regular"></i>
+            <i class="ic" data-ic="star_line_horizontal_3_20_regular"></i>
+            <span id="b-profilo">MR</span>
+            <i class="ic" data-ic="more_horizontal_20_regular"></i>
+          </div>
+        </div>
+        <div id="b-carica"></div>
+        <div id="vista"></div>
+      </div>
+      <div id="strato-cursore">
+        <div id="cursore">
+          <svg class="freccia" width="24" height="34" viewBox="0 0 24 34">
+            <path d="M1.5 1.5 V26 L7.3 20.4 L11.2 29.2 L15.1 27.5 L11.3 18.9 H19.3 Z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          <svg class="mano" width="34" height="36" viewBox="0 0 34 36">
+            <path d="M11 1.5c1.66 0 3 1.34 3 3v9.1c.5-.35 1.1-.55 1.75-.55 1.4 0 2.6.95 2.95 2.25.5-.45 1.15-.7 1.85-.7 1.4 0 2.6.95 2.95 2.25.45-.3 1-.47 1.6-.47 1.66 0 3 1.34 3 3V24c0 5.2-3.8 8.6-8.9 8.6h-2.9c-3 0-5.1-1.35-6.7-3.75L3.3 22.1c-.9-1.35-.55-3.15.75-4.05 1.25-.85 2.9-.6 3.85.55L8 19.95V4.5c0-1.66 1.34-3 3-3z" fill="#fff" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M14 13.6v5.4M18.7 15.1v4M23.5 16.6v3.4" stroke="#000" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div id="notifica">
+      <span class="icona"><i class="ic" data-ic="mail_20_regular"></i></span>
+      <span>
+        <div class="app">Posta · adesso</div>
+        <div class="ogg">Codice di sicurezza dell'account Microsoft</div>
+        <div class="cod">Il tuo codice di sicurezza è <b id="notifica-codice"></b></div>
+      </span>
+    </div>
+  </div>
+
+  <div id="fascia">
+    <div id="capitolo"></div>
+    <div id="sottotitolo"></div>
+  </div>
+
+  <div id="titolo" class="cartello">
+    <svg class="scudo" viewBox="0 0 120 120">
+      <defs><linearGradient id="gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ba0f0"/><stop offset="1" stop-color="#0f6cbd"/></linearGradient></defs>
+      <path d="M60 6 L104 22 V56 C104 84 86 104 60 114 C34 104 16 84 16 56 V22 Z" fill="url(#gs)"/>
+      <path d="M40 60 L54 74 L82 44" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h1>Proteggi il tuo account <span>Outlook</span></h1>
+    <div class="sotto">Nuova e-mail di recupero e nuova password, passo dopo passo</div>
+    <div class="nota">Dati di esempio · le schermate possono variare leggermente nel tempo</div>
+  </div>
+
+  <div id="chiusura" class="cartello">
+    <h1 id="fine-titolo">Fatto!</h1>
+    <div class="lista">
+      <div class="voce" id="fine-1"><span class="spunta"><svg viewBox="0 0 30 30"><path d="M7 15.5 L12.5 21 L23 9.5" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Nuova e-mail di recupero verificata</div>
+      <div class="voce" id="fine-2"><span class="spunta"><svg viewBox="0 0 30 30"><path d="M7 15.5 L12.5 21 L23 9.5" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Vecchia e-mail rimossa</div>
+      <div class="voce" id="fine-3"><span class="spunta"><svg viewBox="0 0 30 30"><path d="M7 15.5 L12.5 21 L23 9.5" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Password cambiata</div>
+    </div>
+    <div class="consiglio" id="fine-consiglio">⚠ Microsoft non ti chiederà mai la password via e-mail</div>
+  </div>
+  <div id="nero"></div>
+</div>
+<script src="motore.js"></script>
+<script src="scene.js"></script>
+</body>
+</html>
