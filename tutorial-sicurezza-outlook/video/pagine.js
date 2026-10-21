@@ -12,6 +12,7 @@ window.DATI = {
   codice2: "730254",
   dataPrima: "14/03/2024",
   dataDopo: "21/10/2026",
+  dataAggiunta: "14/03/2024",
 };
 
 (() => {
@@ -41,13 +42,13 @@ window.DATI = {
     <path d="M-40 150 C 250 50, 520 15, 760 -35" stroke="#3d4566" stroke-width="1.2" fill="none" opacity=".5"/>
     ${stelle}
   </svg></div>`;
-  const piede = `<div class="ms-piede"><div class="voci"><span>Guida</span><span>Condizioni per l'utilizzo</span><span>Privacy e cookie</span></div>
+  const piede = (guida = "Guida") => `<div class="ms-piede"><div class="voci"><span>${guida}</span><span>Condizioni per l'utilizzo</span><span>Privacy e cookie</span></div>
     <div class="nota">Usare l'esplorazione privata se questo non è il proprio dispositivo. <a>Altre informazioni</a></div></div>`;
-  const schedaScura = (id, interno, indietro = true) => `<section class="pagina ms-scuro" id="${id}">${sfondo}
+  const schedaScura = (id, interno, indietro = true, guida) => `<section class="pagina ms-scuro" id="${id}">${sfondo}
     <div class="ms-centro"><div class="ms-scheda">
       <div class="ms-testa">${indietro ? ic("arrow_left_20_regular", "ms-indietro") : ""}${logo()}</div>
       ${interno}
-    </div></div>${piede}</section>`;
+    </div></div>${piede(guida)}</section>`;
 
   const testaAccount = `<header class="ac-testa"><span class="ac-waffle">${ic("grid_dots_20_regular")}</span><span class="ac-titolo">Account Microsoft</span>
     <span class="ac-destra">${ic("question_20_regular")}<span class="ac-avatar">${D.iniziali}</span></span></header>`;
@@ -61,6 +62,12 @@ window.DATI = {
     <nav class="ac-nav">${vociMenu.map(([i, t]) =>
       `<div class="voce${t === attiva ? " sel" : ""}" id="${prefisso}-nav-${t.split(" ")[0].toLowerCase()}">${ic(i)}<span>${t}</span></div>`).join("")}</nav></aside>`;
   const feedback = `<div class="ac-feedback">${ic("person_feedback_20_regular")}Feedback</div>`;
+  // intestazione delle pagine «classiche» su account.live.com (dagli screenshot di «Modifica la password»)
+  const testaLive = `<header class="lv-testa"><span class="lv-waffle">${ic("grid_dots_20_regular")}</span><span class="lv-titolo">Account Microsoft</span><span class="lv-sep"></span>
+    <nav class="lv-nav"><span>Le tue info</span><span>Privacy</span><span class="sel">Sicurezza</span><span>Pagamento e fatturazione</span><span>Sottoscrizioni</span><span>Dispositivi</span></nav>
+    <span class="lv-destra">${ic("question_20_regular")}<span class="lv-avatar">${D.iniziali}</span></span></header>`;
+  const piedeLive = `<footer class="lv-piede"><span>${ic("globe_20_regular")}Italiano (Italia)</span><span>Le tue scelte sulla privacy</span><span>Privacy per l'integrità dei consumer</span>
+    <span class="dx">Privacy e cookie</span><span>Condizioni per l'utilizzo</span><span>Contattaci</span><span>Accessibilità</span><span>© Microsoft 2026</span></footer>`;
 
   // Illustrazioni semplificate (al posto delle immagini Microsoft)
   const illustrazione365 = `<svg width="300" height="132" viewBox="0 0 300 132"><rect width="300" height="132" rx="6" fill="#dfeefe"/>
@@ -121,9 +128,9 @@ window.DATI = {
   P["pg-codice"] = schedaScura("pg-codice", `
       <div class="ms-pillola">${D.account}</div>
       <h1>Immetti il codice</h1>
-      <p class="ms-sotto">Immetti il codice inviato a <b>${D.vecchiaMascherata}</b>.</p>
+      <p class="ms-sotto">Se ${D.vecchia} corrisponde all'indirizzo e-mail del tuo account, ti invieremo un codice.</p>
       <div class="ms-codici" id="cod-cifre">${Array.from({ length: 6 }, (_, i) => `<span class="cifra" id="cod-${i}"></span>`).join("")}</div>
-      <a class="ms-link">Non hai ricevuto il codice? Invialo di nuovo</a>`);
+      <a class="ms-link ms-forte">Usa la password</a>`, true, "Guida e feedback");
 
   P["pg-outlook"] = `<section class="pagina" id="pg-outlook">
     <header class="ol-testa"><span class="ol-waffle">${ic("grid_dots_20_regular")}</span><span class="ol-nome">Outlook</span>
@@ -210,50 +217,52 @@ window.DATI = {
       <div class="ac-card"><div class="ac-card-testa">${ic("phone_laptop_20_regular")}<span><div class="t1">Protezione dispositivo</div><div class="t2">Visualizza un elenco di tutti i tuoi dispositivi, trova la relativa posizione e rivedi i consigli sulla sicurezza.</div></span>${ic("chevron_right_20_regular", "freccia")}</div></div>
     </main></div>${feedback}</section>`;
 
-  P["pg-metodi"] = `<section class="pagina ac" id="pg-metodi">${testaAccount}<div class="ac-corpo">
-    <main class="mt-main"><a class="mt-indietro">${ic("arrow_left_20_regular")}Sicurezza</a>
-      <h1 class="mt-h1">Opzioni di sicurezza avanzate</h1>
-      <h2 class="mt-h2">Modi per dimostrare la propria identità</h2>
-      <p class="mt-p">Aggiungi o rimuovi i modi che usi per accedere al tuo account o per verificare la tua identità.</p>
-      <div class="mt-griglia" id="mt-griglia">
-        <div class="mt-voce" id="mt-password"><div class="riga">${ic("password_20_regular")}<span><div class="t1">Password</div><div class="t2">Ultimo aggiornamento: <span class="mt-data">${D.dataPrima}</span></div></span></div></div>
-        <div class="mt-voce" id="mt-vecchia"><div class="riga">${ic("mail_20_regular")}<span><div class="t1">Invia un codice tramite e-mail</div><div class="t2">${D.vecchiaMascherata}</div></span>${ic("chevron_down_16_regular", "freccia")}</div>
-          <div class="dettagli"><div class="dentro"><a class="rimuovi" id="mt-rimuovi">Rimuovi</a></div></div></div>
-        <div class="mt-voce" id="mt-nuova"><div class="riga">${ic("mail_20_regular")}<span><div class="t1">Invia un codice tramite e-mail</div><div class="t2">${D.nuovaMascherata}</div></span>${ic("chevron_down_16_regular", "freccia")}</div></div>
-        <div class="mt-aggiungi" id="mt-aggiungi">${ic("add_20_regular")}<span>Aggiungi un nuovo modo per accedere o verificare</span></div>
-      </div>
-      <h2 class="mt-h2">Sicurezza aggiuntiva</h2>
-      <div class="mt-extra"><div class="box"><div class="t1">Verifica in due passaggi</div><div class="t2">Disattivata</div><a>Attiva</a></div>
-        <div class="box"><div class="t1">Account senza password</div><div class="t2">Disattivato</div><a>Attiva</a></div></div>
-    </main></div>
-    <div class="dialogo-velo" id="mt-velo"></div>
-    <div class="dialogo" id="dlg-scelta">${ic("dismiss_20_regular", "chiudi")}<h2>Aggiungi un nuovo modo per accedere o verificare</h2>
-      <div class="scelte"><div class="scelta">${ic("phone_20_regular")}Usa un'app</div>
-        <div class="scelta">${ic("fingerprint_20_regular")}Usa il viso, l'impronta digitale, il PIN o una chiave di sicurezza</div>
-        <div class="scelta" id="dlg-scelta-mail">${ic("mail_20_regular")}Invia un codice tramite e-mail</div></div></div>
-    <div class="dialogo" id="dlg-mail">${ic("dismiss_20_regular", "chiudi")}<h2>Aggiungi un indirizzo e-mail</h2>
-      <p>Ti invieremo un codice di sicurezza a questo indirizzo per verificare che sia tuo.</p>
-      <div class="inp" id="dlg-mail-box">${campo("dlg-mail-campo", "nome@esempio.com")}</div>
-      <div class="bottoni"><span class="b">Annulla</span><span class="b primario" id="dlg-mail-avanti">Avanti</span></div></div>
-    <div class="dialogo" id="dlg-codice">${ic("dismiss_20_regular", "chiudi")}<h2>Immetti il codice</h2>
-      <p>Se ${D.nuovaMascherata} corrisponde all'indirizzo e-mail del tuo account, ti invieremo un codice.</p>
-      <div class="inp" id="dlg-codice-box">${campo("dlg-codice-campo", "Codice")}</div>
-      <div class="bottoni"><span class="b">Annulla</span><span class="b primario" id="dlg-codice-avanti">Avanti</span></div></div>
-    <div class="dialogo" id="dlg-rimuovi">${ic("dismiss_20_regular", "chiudi")}<h2>Rimuovere questo metodo?</h2>
-      <p>Non potrai più usare <b>${D.vecchiaMascherata}</b> per accedere al tuo account o per verificare la tua identità.</p>
-      <div class="bottoni"><span class="b">Annulla</span><span class="b primario" id="dlg-rimuovi-ok">Rimuovi</span></div></div>
+  const stato = `<span class="stato">${ic("checkmark_circle_20_filled")}Aggiornato</span>`;
+  const rigaEmail = (id, indirizzo, data) => `<div class="lv-riga" id="${id}">
+      <div class="lv-riga-testa">${ic("chevron_down_20_regular", "freccia")}${ic("mail_20_regular", "tipo")}<span class="t">Invia un codice tramite e-mail</span><span class="ind">${indirizzo}</span>${stato}</div>
+      <div class="lv-dettagli"><div class="dentro">
+        <div class="col"><div class="kv"><span class="k">E-mail</span><span>${indirizzo}</span></div><div class="kv"><span class="k">Data di aggiunta</span><span>${data}</span></div>
+          <div class="kv"><span class="k">Ricevi avvisi</span><span><i class="interruttore"></i>Attivato</span></div></div>
+        <div class="col"><div class="kv"><span class="k">Usato per</span><span>Verifica dell'account</span></div></div>
+        <div class="azioni"><span class="lv-b">Visualizza attività</span><span class="lv-b" id="${id}-rimuovi">Rimuovi</span></div>
+      </div></div></div>`;
+  P["pg-metodi"] = `<section class="pagina lv" id="pg-metodi">${testaLive}
+    <main class="lv-main">
+      <h2 class="lv-h2">Modi per dimostrare la tua identità</h2>
+      <p class="lv-p">Consente di gestire le opzioni di verifica e accesso per l'account Microsoft. <a>Altre informazioni sull'accesso e sulla verifica.</a></p>
+      <div class="lv-riga" id="mt-password"><div class="lv-riga-testa">${ic("chevron_down_20_regular", "freccia")}${ic("password_20_regular", "tipo")}<span class="t">Immettere la password</span><span class="ind"></span>${stato}</div></div>
+      ${rigaEmail("mt-vecchia", D.vecchia, D.dataAggiunta)}
+      ${rigaEmail("mt-nuova", D.nuova, D.dataDopo)}
+      <a class="lv-aggiungi" id="mt-aggiungi">${ic("add_circle_20_regular")}<span>Aggiungere un altro modo per accedere all'account.</span></a>
+    </main>
+    <div class="lv-velo" id="mt-velo"></div>
+    <div class="lv-dialogo" id="dlg-scelta">${ic("dismiss_20_regular", "chiudi")}<h2>Aggiungi una nuova modalità di accesso o verifica</h2>
+      <div class="tessera" id="dlg-scelta-passkey">${ic("person_key_20_regular", "grande")}<span><b>Viso, impronta digitale, PIN o chiave di sicurezza</b>Usare il dispositivo per accedere con una passkey.</span>${ic("question_circle_20_regular", "aiuto")}</div>
+      <div class="tessera">${ic("person_lock_20_filled", "grande")}<span><b>Usa un'app</b>Approva rapidamente le notifiche di accesso nel tuo telefono.</span></div>
+      <div class="tessera" id="dlg-scelta-mail">${ic("mail_20_regular", "grande")}<span><b>Invia un codice tramite e-mail</b>Consente di ricevere un'e-mail e accedere con un codice.</span></div></div>
+    <div class="lv-dialogo" id="dlg-mail">${ic("dismiss_20_regular", "chiudi")}<h2>Aggiungi un indirizzo e-mail</h2>
+      <p>Immetti l'indirizzo e-mail a cui vuoi ricevere i codici di sicurezza.</p>
+      <div class="lv-inp" id="dlg-mail-box">${campo("dlg-mail-campo", "nome@esempio.com")}</div>
+      <div class="bottoni"><span class="lv-b">Annulla</span><span class="lv-b primario" id="dlg-mail-avanti">Avanti</span></div></div>
+    <div class="lv-dialogo" id="dlg-codice">${ic("dismiss_20_regular", "chiudi")}<h2>Verifica l'indirizzo e-mail</h2>
+      <p>Abbiamo inviato un codice a ${D.nuova}. Immettilo qui sotto per verificare l'indirizzo.</p>
+      <div class="lv-inp" id="dlg-codice-box">${campo("dlg-codice-campo", "Codice")}</div>
+      <div class="bottoni"><span class="lv-b">Annulla</span><span class="lv-b primario" id="dlg-codice-avanti">Verifica</span></div></div>
+    <div class="lv-dialogo" id="dlg-rimuovi">${ic("dismiss_20_regular", "chiudi")}<h2>Rimuovere l'indirizzo e-mail?</h2>
+      <p>Rimuovere l'indirizzo e-mail ${D.vecchia}? Se rimuovi questo indirizzo e-mail, non potrai usarlo per la verifica.</p>
+      <div class="bottoni"><span class="lv-b">Annulla</span><span class="lv-b primario" id="dlg-rimuovi-ok">Rimuovi</span></div></div>
   </section>`;
 
-  P["pg-cambia"] = `<section class="pagina cp" id="pg-cambia"><div class="cp-testa">${logo()}</div>
-    <main class="cp-main"><h1 class="cp-h1">Cambia password</h1>
-      <p class="cp-p">Una password complessa contribuisce a impedire l'accesso non autorizzato al tuo account di posta elettronica.</p>
-      <div class="cp-campo-et">Password corrente</div><div class="cp-campo" id="cp-attuale-box">${campo("cp-attuale")}</div>
-      <div class="cp-campo-et">Nuova password</div><div class="cp-campo" id="cp-nuova-box">${campo("cp-nuova")}</div>
-      <div class="cp-aiuto">Almeno 8 caratteri, con distinzione tra maiuscole e minuscole.</div>
-      <div class="cp-campo-et">Immetti di nuovo la password</div><div class="cp-campo" id="cp-ripeti-box">${campo("cp-ripeti")}</div>
-      <div class="cp-check"><span class="box"></span>Chiedimi di modificare la password ogni 72 giorni</div>
+  P["pg-cambia"] = `<section class="pagina lv" id="pg-cambia">${testaLive}
+    <main class="lv-main cp">
+      <h1 class="cp-h1">Modifica la password</h1>
+      <p class="cp-p">Una password complessa consente di impedire accessi non autorizzati al tuo account e-mail.</p>
+      <div class="cp-et">Nuova password</div><div class="cp-campo" id="cp-nuova-box">${campo("cp-nuova", "Nuova password")}</div>
+      <div class="cp-aiuto">Almeno 8 caratteri. La distinzione tra maiuscole e minuscole è rilevante</div>
+      <div class="cp-et">Conferma la password</div><div class="cp-campo" id="cp-ripeti-box">${campo("cp-ripeti", "Conferma la password")}</div>
+      <div class="cp-check"><span class="box"></span>La password deve essere cambiata ogni 72 giorni</div>
       <div class="cp-bottoni"><span class="b primario" id="cp-salva">Salva</span><span class="b">Annulla</span></div>
-    </main></section>`;
+    </main>${piedeLive}</section>`;
 
   window.PAGINE = P;
 })();

@@ -25,20 +25,21 @@ Dati di esempio mostrati nel video (tutti inventati):
 | 2/7 | Account | Clicca sulle tue iniziali in alto a destra e scegli «Il mio account Microsoft». | Clic sulle iniziali, si apre il riquadro del profilo (zoom) → «Il mio account Microsoft» apre una nuova scheda |
 | 3/7 | Sicurezza | Nel menu a sinistra apri «Sicurezza», poi clicca su «Gestisci la modalità di accesso». | Menu laterale → pagina «Sicurezza» → zoom sul pulsante «Gestisci la modalità di accesso» |
 | 4/7 | Verifica identità | Microsoft vuole essere sicura che sia tu: scegli la tua e-mail di recupero e scrivila per intero. | «Ci siamo quasi» → «Invia un codice ve*****@outlook.com» → «Verifica l'indirizzo di posta elettronica» → «Invia il codice» |
-| | | Poi inserisci il codice che ti arriva. | Notifica con il codice → «Immetti il codice» → pagina dei metodi di accesso |
-| 5/7 | Nuova e-mail | Ora clicca su «Aggiungi un nuovo modo per accedere o verificare» e scegli l'e-mail. | Finestra con i metodi → «Invia un codice tramite e-mail» |
-| | | Scrivi il nuovo indirizzo e confermalo con il codice che ricevi. | Nuovo indirizzo → «Avanti» → notifica con il codice → «Avanti» → la nuova e-mail compare nell'elenco (bordo verde) |
-| 6/7 | Vecchia e-mail | Adesso apri la vecchia e-mail, clicca su «Rimuovi» e conferma. Toglila solo dopo aver verificato quella nuova! | Clic sulla vecchia e-mail → «Rimuovi» → conferma → resta solo quella nuova |
-| 7/7 | Password | Infine, torna su «Sicurezza» e clicca su «Cambia password». | «← Sicurezza» → «Cambia password» |
-| | | Digita la password attuale, poi una nuova, lunga e mai usata altrove, e clicca su «Salva». | Tre campi compilati → «Salva» → «Ultimo aggiornamento» passa alla data di oggi (zoom) |
+| | | Poi inserisci il codice che ti arriva. | Notifica con il codice → «Immetti il codice» (sei caselle) → pagina «Modi per dimostrare la tua identità» |
+| 5/7 | Nuova e-mail | Ora clicca su «Aggiungere un altro modo per accedere all'account» e scegli «Invia un codice tramite e-mail». | Finestra «Aggiungi una nuova modalità di accesso o verifica» → «Invia un codice tramite e-mail» |
+| | | Scrivi il nuovo indirizzo e confermalo con il codice che ricevi. | Nuovo indirizzo → «Avanti» → notifica con il codice → «Verifica» → la nuova e-mail compare nell'elenco (bordo verde) |
+| 6/7 | Vecchia e-mail | Adesso apri la vecchia e-mail, clicca su «Rimuovi» e conferma. Toglila solo dopo aver verificato quella nuova! | Clic sulla riga della vecchia e-mail (si apre il dettaglio) → «Rimuovi» → «Rimuovere l'indirizzo e-mail?» → «Rimuovi» → resta solo quella nuova |
+| 7/7 | Password | Infine, torna su «Sicurezza» e clicca su «Cambia password». | «Sicurezza» nella barra in alto → «Cambia password» |
+| | | Digita due volte la nuova password, lunga e mai usata altrove, e clicca su «Salva». | «Modifica la password»: «Nuova password» e «Conferma la password» → «Salva» → «Ultimo aggiornamento» passa alla data di oggi (zoom) |
 | — | Chiusura | Fatto! Il tuo account ora è più protetto. E ricorda: Microsoft non ti chiederà mai la password via e-mail. | Riepilogo con le spunte verdi e l'avviso sulle e-mail truffa |
 
 ## Fedeltà delle schermate
 
-Le pagine sono ricostruite in HTML. Queste seguono fedelmente gli screenshot reali: posta in arrivo con
-il menu del profilo, home dell'account, pagina «Sicurezza», «Ci siamo quasi» e «Verifica l'indirizzo di
-posta elettronica».
+Le pagine sono ricostruite in HTML sulla base degli screenshot reali, con dati di esempio. Seguono gli
+screenshot: posta in arrivo con il menu del profilo, home dell'account, «Sicurezza», «Ci siamo quasi»,
+«Verifica l'indirizzo di posta elettronica», «Immetti il codice», «Modi per dimostrare la tua identità»
+con le finestre «Aggiungi una nuova modalità di accesso o verifica» e «Rimuovere l'indirizzo e-mail?»,
+«Modifica la password».
 
-Queste invece sono ricostruite senza un riferimento, nello stesso stile delle altre: pagine di accesso,
-«Immetti il codice», pagina con l'elenco dei metodi e relative finestre (aggiungi, codice, rimuovi),
-«Cambia password». Con gli screenshot reali di queste schermate si possono rendere identiche.
+Queste sono ricostruite nello stesso stile, ma senza un riferimento: le pagine di accesso (e-mail e
+password), la finestra in cui si scrive la nuova e-mail e quella in cui si inserisce il suo codice.

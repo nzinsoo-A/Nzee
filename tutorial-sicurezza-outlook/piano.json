@@ -42,7 +42,7 @@
     {
       "id": "aggiungi",
       "pausa_prima": 0.5,
-      "testo": "Ora clicca su «Aggiungi un nuovo modo per accedere o verificare» e scegli {l'e-mail|l'imèil}.",
+      "testo": "Ora clicca su «Aggiungere un altro modo per accedere all'account» e scegli «Invia un codice tramite {e-mail|imèil}».",
       "pausa_dopo": 0.6
     },
     {
@@ -66,7 +66,7 @@
     {
       "id": "salva",
       "pausa_prima": 0.0,
-      "testo": "Digita la password attuale, poi una nuova, lunga e mai usata altrove, e clicca su «Salva».",
+      "testo": "Digita due volte la nuova password, lunga e mai usata altrove, e clicca su «Salva».",
       "pausa_dopo": 2.9
     },
     {

@@ -59,11 +59,13 @@
 .ms-pulsante.hover { background: #1d6fd0; }
 .ms-pulsante.premuto { background: #154f95; }
 .ms-sinistra { text-align: left; }
-.ms-codici { display: flex; justify-content: center; gap: 10px; margin-top: 24px; }
+.ms-codici { display: flex; justify-content: center; gap: 8px; margin-top: 30px; }
+.ms-codici .cifra:nth-child(4) { margin-left: 8px; }
 .ms-codici .cifra {
-  width: 46px; height: 54px; border: 1px solid #8a8a8a; border-radius: 4px; display: grid; place-items: center; font-size: 22px; font-weight: 600;
+  width: 40px; height: 40px; border: 1px solid #555; border-radius: 3px; display: grid; place-items: center; font-size: 19px; font-weight: 600;
 }
-.ms-codici .cifra.attivo { border: 2px solid #4fa6ee; }
+.ms-codici .cifra.attivo { border-color: #3b8ee0; }
+.ms-link.ms-forte { font-weight: 600; margin-top: 40px; }
 .ms-piede { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; font-size: 13px; color: #e6e6e6; }
 .ms-piede .voci span { margin: 0 14px; }
 .ms-piede .nota { font-size: 11.5px; margin-top: 8px; color: #dcdcdc; }
@@ -193,77 +195,87 @@
 .ac-feedback .ic { width: 16px; height: 16px; }
 .ac-esito { display: none; }
 
-/* ---------- Opzioni di sicurezza (gestione dei metodi di accesso) ---------- */
-.mt-main { position: absolute; left: 50%; top: 0; width: 900px; transform: translateX(-50%); }
-.mt-indietro { display: inline-flex; align-items: center; gap: 6px; color: #0f6cbd; font-size: 14px; margin-top: 26px; }
-.mt-indietro .ic { width: 16px; height: 16px; }
-.mt-h1 { font-size: 27px; font-weight: 600; margin-top: 10px; }
-.mt-h2 { font-size: 18px; font-weight: 600; margin-top: 26px; }
-.mt-p { font-size: 13.5px; color: #424242; margin-top: 6px; }
-.mt-griglia { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; align-items: start; }
-.mt-voce { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); padding: 14px 16px; position: relative; overflow: hidden; }
-.mt-voce .riga { display: flex; gap: 12px; align-items: flex-start; }
-.mt-voce .ic { width: 22px; height: 22px; color: #424242; margin-top: 1px; }
-.mt-voce .t1 { font-size: 14px; font-weight: 600; }
-.mt-voce .t2 { font-size: 13px; color: #616161; margin-top: 2px; }
-.mt-voce .freccia { margin-left: auto; width: 16px; height: 16px; }
-.mt-voce .dettagli { height: 0; overflow: hidden; }
-.mt-voce .dettagli .dentro { padding: 12px 0 2px 34px; display: flex; gap: 18px; font-size: 13.5px; }
-.mt-voce .dettagli .rimuovi { color: #0f6cbd; text-decoration: underline; }
-.mt-voce.hover { background: #fafafa; }
-.mt-voce.nuova { box-shadow: 0 0 0 2px #13a10e, 0 1px 3px rgba(0,0,0,.1); }
-.mt-aggiungi { border: 1px dashed #8a8886; border-radius: 8px; padding: 14px 16px; display: flex; gap: 12px; align-items: center; color: #0f6cbd; font-weight: 600; font-size: 14px; background: #fff; }
-.mt-aggiungi .ic { width: 22px; height: 22px; }
-.mt-aggiungi.hover { background: #f0f6fc; }
-.mt-extra { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
-.mt-extra .box { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); padding: 14px 16px; font-size: 13.5px; }
-.mt-extra .box .t1 { font-weight: 600; font-size: 14px; }
-.mt-extra .box .t2 { color: #616161; margin-top: 3px; }
-.mt-extra .box a { color: #0f6cbd; display: inline-block; margin-top: 8px; }
-
-.dialogo-velo { position: absolute; inset: 0; background: rgba(0,0,0,.4); opacity: 0; visibility: hidden; z-index: 20; }
-.dialogo {
-  position: absolute; left: 50%; top: 50%; width: 480px; transform: translate(-50%, -50%); background: #fff; border-radius: 8px;
-  box-shadow: 0 18px 48px rgba(0,0,0,.3); padding: 24px 26px 22px; z-index: 21; opacity: 0; visibility: hidden; font-size: 14px;
+/* ---------- Pagine «classiche» di account.live.com (metodi di accesso, modifica password) ---------- */
+.lv { background: #fff; color: #323130; font-size: 14px; }
+.lv-testa { position: absolute; left: 0; top: 0; right: 0; height: 47px; background: #006fc9; color: #fff; display: flex; align-items: center; z-index: 2; }
+.lv-waffle { width: 48px; display: grid; place-items: center; }
+.lv-titolo { font-size: 15.5px; font-weight: 600; margin-left: 2px; }
+.lv-sep { width: 1px; height: 24px; background: rgba(255,255,255,.55); margin: 0 18px; }
+.lv-nav { display: flex; gap: 30px; font-size: 14.5px; }
+.lv-nav .sel { font-weight: 600; }
+.lv-destra { margin-left: auto; display: flex; align-items: center; gap: 22px; padding-right: 14px; }
+.lv-avatar { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.85); display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+.lv-main { position: absolute; left: 64px; right: 64px; top: 47px; }
+.lv-h2 { font-size: 18px; font-weight: 600; margin-top: 30px; }
+.lv-p { font-size: 13.5px; margin-top: 12px; color: #323130; }
+.lv-p a { color: #0067b8; }
+.lv-riga { margin-top: 14px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.12), 0 0 1px rgba(0,0,0,.08); overflow: hidden; }
+.lv-riga + .lv-riga { margin-top: 12px; }
+.lv-riga-testa { height: 58px; display: flex; align-items: center; padding: 0 24px; font-size: 14.5px; }
+.lv-riga-testa .freccia { width: 18px; height: 18px; color: #605e5c; margin-right: 26px; }
+.lv-riga-testa .tipo { width: 24px; height: 24px; color: #605e5c; margin-right: 14px; }
+.lv-riga-testa .t { width: 330px; }
+.lv-riga-testa .ind { flex: 1; color: #323130; }
+.lv-riga-testa .stato { display: flex; align-items: center; gap: 8px; color: #107c10; font-weight: 600; width: 190px; }
+.lv-riga-testa .stato .ic { width: 18px; height: 18px; color: #107c10; }
+.lv-riga.hover .lv-riga-testa { background: #f8f8f8; }
+.lv-riga.nuova { box-shadow: 0 0 0 2px #13a10e, 0 1px 4px rgba(0,0,0,.12); }
+.lv-dettagli { height: 0; overflow: hidden; }
+.lv-dettagli .dentro { display: grid; grid-template-columns: 1fr 1fr; padding: 6px 24px 20px 68px; row-gap: 14px; font-size: 13.5px; }
+.lv-dettagli .kv { display: flex; gap: 0; margin-bottom: 10px; }
+.lv-dettagli .kv .k { width: 150px; color: #605e5c; }
+.lv-dettagli .interruttore { display: inline-block; width: 36px; height: 18px; border-radius: 9px; background: #0067b8; position: relative; vertical-align: -4px; margin-right: 10px; }
+.lv-dettagli .interruttore::after { content: ""; position: absolute; right: 3px; top: 3px; width: 12px; height: 12px; border-radius: 50%; background: #fff; }
+.lv-dettagli .azioni { grid-column: 1 / -1; display: flex; gap: 8px; }
+.lv-b { display: inline-grid; place-items: center; height: 32px; padding: 0 16px; background: #f3f2f1; color: #323130; font-size: 14px; }
+.lv-b.hover { background: #e1dfdd; }
+.lv-b.premuto { background: #c8c6c4; }
+.lv-b.primario { background: #0067b8; color: #fff; }
+.lv-b.primario.hover { background: #005da6; }
+.lv-b.primario.premuto { background: #004e8c; }
+.lv-aggiungi { display: inline-flex; align-items: center; gap: 12px; color: #0067b8; font-size: 14.5px; margin: 22px 0 0 24px; padding: 4px 2px; }
+.lv-aggiungi .ic { width: 24px; height: 24px; }
+.lv-aggiungi.hover span { text-decoration: underline; }
+.lv-velo { position: absolute; inset: 0; background: rgba(255,255,255,.82); opacity: 0; visibility: hidden; z-index: 20; }
+.lv-dialogo {
+  position: absolute; left: 50%; top: 50%; width: 420px; transform: translate(-50%, -50%); background: #fff; border: 1px solid #0067b8;
+  box-shadow: 0 6px 24px rgba(0,0,0,.14); padding: 26px 24px 30px; z-index: 21; opacity: 0; visibility: hidden; color: #323130;
 }
-.dialogo h2 { font-size: 20px; font-weight: 600; padding-right: 30px; }
-.dialogo .chiudi { position: absolute; right: 18px; top: 22px; width: 18px; height: 18px; color: #424242; }
-.dialogo p { color: #424242; margin-top: 10px; line-height: 1.5; }
-.dialogo .scelte { margin-top: 14px; }
-.dialogo .scelta { display: flex; align-items: center; gap: 14px; padding: 11px 12px; border-radius: 6px; font-size: 14.5px; }
-.dialogo .scelta .ic { width: 22px; height: 22px; color: #0f6cbd; }
-.dialogo .scelta.hover { background: #f0f6fc; }
-.dialogo .scelta.off { color: #a6a6a6; }
-.dialogo .scelta.off .ic { color: #b3b3b3; }
-.dialogo .inp { margin-top: 14px; height: 34px; border: 1px solid #8a8886; border-radius: 4px; display: flex; align-items: center; padding: 0 10px; font-size: 14.5px; position: relative; }
-.dialogo .inp.attivo { border-color: #0f6cbd; box-shadow: inset 0 -2px 0 #0f6cbd; }
-.dialogo .inp .segnaposto { left: 10px; }
-.dialogo .bottoni { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
-.dialogo .b { height: 32px; padding: 0 18px; border-radius: 4px; display: grid; place-items: center; font-weight: 600; border: 1px solid #d1d1d1; background: #fff; }
-.dialogo .b.primario { background: #0f6cbd; border-color: #0f6cbd; color: #fff; }
-.dialogo .b.primario.hover { background: #115ea3; }
-.dialogo .b.primario.premuto { background: #0c3b5e; }
+.lv-dialogo h2 { font-size: 19.5px; font-weight: 400; line-height: 1.25; padding-right: 36px; }
+.lv-dialogo .chiudi { position: absolute; right: 22px; top: 26px; width: 18px; height: 18px; color: #323130; }
+.lv-dialogo p { font-size: 13.5px; line-height: 1.5; margin-top: 18px; }
+.lv-dialogo .tessera { display: flex; gap: 16px; border: 1px solid #edebe9; padding: 12px 14px 12px 16px; margin-top: 12px; font-size: 14px; line-height: 1.45; align-items: flex-start; }
+.lv-dialogo h2 + .tessera { margin-top: 16px; }
+.lv-dialogo .tessera b { display: block; font-weight: 600; }
+.lv-dialogo .tessera .grande { width: 34px; height: 34px; color: #1b1a19; margin-top: 3px; }
+.lv-dialogo .tessera .aiuto { width: 20px; height: 20px; margin: auto 0 auto auto; color: #323130; }
+.lv-dialogo .tessera.sel, .lv-dialogo .tessera.hover { border-color: #0067b8; }
+.lv-dialogo .tessera.hover { background: #f3f9fd; }
+.lv-dialogo .bottoni { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 22px; }
+.lv-inp { position: relative; margin-top: 16px; height: 32px; border: 1px solid #7f7f7f; display: flex; align-items: center; padding: 0 10px; font-size: 14.5px; }
+.lv-inp.attivo { border: 2px solid #101010; padding: 0 9px; }
+.lv-inp .segnaposto { left: 10px; color: #6e6e6e; }
+.lv-piede { position: absolute; left: 0; right: 0; top: 557px; height: 88px; background: #f2f2f2; display: flex; align-items: center; gap: 26px; padding: 0 64px; font-size: 11.5px; color: #323130; }
+.lv-piede span { display: inline-flex; align-items: center; gap: 8px; }
+.lv-piede .ic { width: 18px; height: 18px; }
+.lv-piede .dx { margin-left: auto; }
 
-/* ---------- Cambia password ---------- */
-.cp { background: #fff; color: #1b1b1b; }
-.cp-testa { height: 56px; display: flex; align-items: center; padding: 0 28px; border-bottom: 1px solid #ededed; }
-.cp-testa .ms-logo { font-size: 18px; color: #737373; }
-.cp-testa .ms-logo .q { grid-template-columns: 10px 10px; grid-auto-rows: 10px; }
-.cp-testa .ms-logo b { color: #d0d0d0; font-weight: 300; margin: 0 4px; }
-.cp-main { position: absolute; left: 50%; top: 56px; width: 460px; transform: translateX(-50%); }
-.cp-h1 { font-size: 26px; font-weight: 600; margin-top: 30px; }
-.cp-p { font-size: 14px; color: #424242; margin-top: 10px; line-height: 1.5; }
-.cp-campo-et { font-size: 14px; margin-top: 16px; }
-.cp-campo { margin-top: 6px; height: 34px; border: 1px solid #8a8886; border-radius: 4px; display: flex; align-items: center; padding: 0 10px; font-size: 16px; letter-spacing: 2px; position: relative; }
-.cp-campo.attivo { border-color: #0f6cbd; box-shadow: inset 0 -2px 0 #0f6cbd; }
-.cp-aiuto { font-size: 12.5px; color: #616161; margin-top: 4px; }
-.cp-check { display: flex; align-items: center; gap: 10px; margin-top: 18px; font-size: 14px; }
-.cp-check .box { width: 18px; height: 18px; border: 1px solid #616161; border-radius: 3px; }
-.cp-bottoni { display: flex; gap: 10px; margin-top: 22px; }
-.cp-bottoni .b { height: 34px; padding: 0 22px; border-radius: 4px; display: grid; place-items: center; font-weight: 600; font-size: 14px; border: 1px solid #d1d1d1; }
-.cp-bottoni .b.primario { background: #0f6cbd; color: #fff; border-color: #0f6cbd; }
-.cp-bottoni .b.primario.hover { background: #115ea3; }
-.cp-bottoni .b.primario.premuto { background: #0c3b5e; }
+/* «Modifica la password» */
+.cp-h1 { font-size: 36px; font-weight: 300; margin-top: 26px; color: #1b1b1b; }
+.cp-p { font-size: 14.5px; margin-top: 22px; }
+.cp-et { font-size: 13.5px; font-weight: 600; margin-top: 22px; }
+.cp-campo { position: relative; margin-top: 10px; width: 390px; height: 32px; border: 1px solid #7f7f7f; display: flex; align-items: center; padding: 0 9px; font-size: 14px; }
+.cp-campo.attivo { border: 2px solid #101010; padding: 0 8px; }
+.cp-campo .segnaposto { left: 9px; color: #6e6e6e; }
+.cp-campo .valore { letter-spacing: 2px; font-size: 15px; }
+.cp-aiuto { font-size: 12px; margin-top: 14px; }
+.cp-check { display: flex; align-items: center; gap: 10px; margin-top: 26px; font-size: 13.5px; font-weight: 600; }
+.cp-check .box { width: 19px; height: 19px; border: 1px solid #7f7f7f; border-radius: 2px; }
+.cp-bottoni { display: flex; gap: 4px; margin-top: 54px; }
+.cp-bottoni .b { display: grid; place-items: center; height: 31px; padding: 0 32px; background: #cccccc; color: #000; font-size: 14.5px; }
+.cp-bottoni .b.primario { background: #0067b8; color: #fff; }
+.cp-bottoni .b.primario.hover { background: #005da6; }
+.cp-bottoni .b.primario.premuto { background: #004e8c; }
 
 .nascosto { display: none !important; }
 .ac-rapidi .rap.aggiornato { background: #dff6dd; box-shadow: 0 0 0 2px #13a10e; }

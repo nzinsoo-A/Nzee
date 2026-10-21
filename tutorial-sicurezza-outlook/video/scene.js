@@ -14,7 +14,7 @@ window.SCENA = E => {
     account: "https://account.microsoft.com/?ref=MeControl&refd=account.microsoft.com",
     sicurezza: "https://account.microsoft.com/security",
     verifica: "https://login.live.com/proofs/Verify",
-    metodi: "https://account.live.com/proofs/manage/additional",
+    metodi: "https://account.live.com/proofs/Manage/additional?lang=it-IT",
     cambia: "https://account.live.com/password/Change",
   };
 
@@ -116,23 +116,23 @@ window.SCENA = E => {
   notifica(tNotifica1, tNotifica1 + 2.6, D.codice1);
   const tcCifre = clicca("#cod-0", tNotifica1 + 0.45, { da: tcInvia + 0.4 });
   const fineCodice = E.digitaCifre("cod", D.codice1, Math.max(tcCifre + 0.25, P("codice", "codice")), { cps: 7 });
-  browser.vai(fineCodice + 0.5, "B", "pg-metodi", URL.metodi, "Opzioni di sicurezza avanzate", "ms");
+  browser.vai(fineCodice + 0.5, "B", "pg-metodi", URL.metodi, "Account Microsoft", "ms");
   camera.zoom(fineCodice + 0.3, fineCodice + 0.9, 1);
 
   // ---------- 5. Nuova e-mail di recupero ----------
   E.capitolo(seg("aggiungi").inizio - 0.3, "5/7", "Nuova e-mail");
-  // la pagina dei metodi ha testi piccoli: la si avvicina per tutta la parte di aggiunta e rimozione
-  camera.zoom(seg("aggiungi").inizio - 0.4, seg("aggiungi").inizio + 0.5, 1.3, { x: 960, y: 470 });
-  const tcAggiungi = clicca("#mt-aggiungi", P("aggiungi", "verificare»", { fine: true }) - 0.1, {
+  const tcAggiungi = clicca("#mt-aggiungi", P("aggiungi", "all'account", { fine: true }) - 0.1, {
     da: P("aggiungi", "Ora") - 0.1,
-    arrivo: P("aggiungi", "«Aggiungi") + 0.3,
-    opz: { ax: 0.4 },
+    arrivo: P("aggiungi", "Aggiungere") + 0.3,
+    opz: { ax: 0.35 },
     mano: true,
   });
-  const tcScelta = clicca("#dlg-scelta-mail", P("aggiungi", "l'e-mail.", { fine: true }) - 0.1, {
-    da: tcAggiungi + 0.3,
-    arrivo: P("aggiungi", "scegli") + 0.25,
-    opz: { ax: 0.35 },
+  const arrivoMail = P("aggiungi", "Invia") + 0.2;
+  E.classe("#dlg-scelta-passkey", "sel", 0, arrivoMail);
+  const tcScelta = clicca("#dlg-scelta-mail", P("aggiungi", "e-mail", { fine: true }) - 0.1, {
+    da: tcAggiungi + 0.35,
+    arrivo: arrivoMail,
+    opz: { ax: 0.4 },
   });
   const tcMail = clicca("#dlg-mail-box", Math.max(tcScelta + 0.7, P("nuova", "Scrivi")), { da: tcScelta + 0.25, opz: { ax: 0.3 } });
   E.classe("#dlg-mail-box", "attivo", tcMail);
@@ -150,7 +150,7 @@ window.SCENA = E => {
   E.mostra("#dlg-codice", tcAvanti3 + 0.15, tcAvanti4 + 0.1, dialogo);
   const tNuova = tcAvanti4 + 0.25;
   E.classe("#mt-nuova", "nascosto", 0, tNuova);
-  E.mostra("#mt-nuova", tNuova, Infinity, { entra: 0.4, scala: 0.06 });
+  E.mostra("#mt-nuova", tNuova, Infinity, { entra: 0.4, scala: 0.03 });
   E.classe("#mt-nuova", "nuova", tNuova, tNuova + 2.4);
 
   // ---------- 6. Rimozione della vecchia e-mail ----------
@@ -158,15 +158,15 @@ window.SCENA = E => {
   const tcVecchia = clicca("#mt-vecchia", P("rimuovi", "e-mail,", { fine: true }) - 0.1, {
     da: P("rimuovi", "Adesso"),
     arrivo: P("rimuovi", "vecchia") + 0.2,
-    opz: { ax: 0.45, ay: 0.4 },
+    opz: { ax: 0.22, ay: 0.5 },
   });
-  const dettagli = document.querySelector("#mt-vecchia .dettagli");
-  E.ogni(t => { dettagli.style.height = `${E.lerp(0, 34, E.prog(t, tcVecchia + 0.05, tcVecchia + 0.3))}px`; });
-  E.ogni(t => { document.querySelector("#mt-vecchia .freccia").style.transform = `rotate(${E.prog(t, tcVecchia + 0.05, tcVecchia + 0.3) * 180}deg)`; });
-  const tcRimuovi = clicca("#mt-rimuovi", P("rimuovi", "«Rimuovi»", { fine: true }) - 0.05, {
-    da: tcVecchia + 0.35,
+  const dettagli = document.querySelector("#mt-vecchia .lv-dettagli");
+  const altezzaDettagli = dettagli.firstElementChild.offsetHeight;
+  E.ogni(t => { dettagli.style.height = `${E.lerp(0, altezzaDettagli, E.prog(t, tcVecchia + 0.05, tcVecchia + 0.35))}px`; });
+  E.ogni(t => { document.querySelector("#mt-vecchia .freccia").style.transform = `rotate(${E.prog(t, tcVecchia + 0.05, tcVecchia + 0.35) * 180}deg)`; });
+  const tcRimuovi = clicca("#mt-vecchia-rimuovi", P("rimuovi", "«Rimuovi»", { fine: true }) - 0.05, {
+    da: tcVecchia + 0.4,
     arrivo: P("rimuovi", "«Rimuovi»") + 0.1,
-    mano: true,
   });
   const tcConferma = clicca("#dlg-rimuovi-ok", P("rimuovi", "conferma.", { fine: true }) - 0.35, {
     da: tcRimuovi + 0.35,
@@ -174,41 +174,36 @@ window.SCENA = E => {
   });
   E.mostra("#mt-velo", [[tcAggiungi + 0.12, tcAvanti4 + 0.1], [tcRimuovi + 0.12, tcConferma + 0.1]], null, { entra: 0.18, esce: 0.2 });
   E.mostra("#dlg-rimuovi", tcRimuovi + 0.12, tcConferma + 0.1, dialogo);
-  E.mostra("#mt-vecchia", 0, tcConferma + 0.2, { entra: 0.01, esce: 0.3, scala: 0.05 });
+  E.mostra("#mt-vecchia", 0, tcConferma + 0.2, { entra: 0.01, esce: 0.3, scala: 0.03 });
   E.classe("#mt-vecchia", "nascosto", tcConferma + 0.5);
   E.classe("#mt-nuova", "nuova", P("rimuovi", "quella"), P("rimuovi", "quella") + 1.6);
-  cursore.vai(tcConferma + 0.6, P("rimuovi", "quella") - 0.1, E.punto("#mt-nuova", { ax: 0.75, ay: 0.85 }));
+  cursore.vai(tcConferma + 0.6, P("rimuovi", "quella") - 0.1, E.punto("#mt-nuova", { ax: 0.6, ay: 1.6 }));
 
   // ---------- 7. Cambio della password ----------
   E.capitolo(seg("password").inizio - 0.3, "7/7", "Password");
-  const tcIndietro = clicca("#pg-metodi .mt-indietro", P("password", "«Sicurezza»", { fine: true }) - 0.1, {
+  const tcIndietro = clicca("#pg-metodi .lv-nav .sel", P("password", "«Sicurezza»", { fine: true }) - 0.1, {
     da: P("password", "Infine,"),
     arrivo: P("password", "«Sicurezza»") + 0.15,
     mano: true,
   });
   browser.vai(tcIndietro + 0.3, "B", "pg-sicurezza", URL.sicurezza, "Account Microsoft | Sicurezza", "ms");
-  camera.zoom(tcIndietro + 0.1, tcIndietro + 0.7, 1);
   const tcCambia = clicca("#sic-rap-pwd", P("password", "password».", { fine: true }) - 0.15, {
     da: tcIndietro + 0.4,
     arrivo: P("password", "«Cambia") + 0.2,
     opz: { ax: 0.3 },
     mano: true,
   });
-  browser.vai(tcCambia + 0.35, "B", "pg-cambia", URL.cambia, "Cambia password", "ms");
-  camera.zoom(tcCambia + 0.5, tcCambia + 1.3, 1.25, "#pg-cambia .cp-main");
+  browser.vai(tcCambia + 0.35, "B", "pg-cambia", URL.cambia, "Modifica la password", "ms");
+  camera.zoom(tcCambia + 0.5, tcCambia + 1.3, 1.22, E.punto("#cp-ripeti-box", { ax: 0.8, ay: -0.4 }));
 
-  const fuocoAttuale = [0, Infinity], fuocoNuova = [0, Infinity];
-  const tcAttuale = clicca("#cp-attuale-box", Math.max(tcCambia + 0.9, P("salva", "Digita")), { da: tcCambia + 0.4, opz: { ax: 0.3 } });
-  fuocoAttuale[0] = tcAttuale;
-  const fineAttuale = E.digita("#cp-attuale", "Esempio2024", tcAttuale + 0.15, { cps: 14, pwd: true, fuoco: fuocoAttuale });
-  const tcNuova = clicca("#cp-nuova-box", Math.max(fineAttuale + 0.35, P("salva", "una")), { da: fineAttuale + 0.05, opz: { ax: 0.3 } });
-  fuocoAttuale[1] = fuocoNuova[0] = tcNuova;
-  const fineNuova = E.digita("#cp-nuova", "Lampone!Viola27", tcNuova + 0.15, { cps: 17, pwd: true, fuoco: fuocoNuova });
-  const tcRipeti = clicca("#cp-ripeti-box", fineNuova + 0.35, { da: fineNuova + 0.05, opz: { ax: 0.3 } });
+  // la pagina si apre con il cursore di testo già nel primo campo
+  const tcNuova = clicca("#cp-nuova-box", Math.max(tcCambia + 0.9, P("salva", "Digita")), { da: tcCambia + 0.4, opz: { ax: 0.3 } });
+  const fuocoNuova = [tcCambia + 0.35, Infinity];
+  const fineNuova = E.digita("#cp-nuova", "Lampone!Viola27", tcNuova + 0.15, { cps: 16, pwd: true, fuoco: fuocoNuova });
+  const tcRipeti = clicca("#cp-ripeti-box", Math.max(fineNuova + 0.35, P("salva", "nuova") + 0.1), { da: fineNuova + 0.05, opz: { ax: 0.3 } });
   fuocoNuova[1] = tcRipeti;
-  const fineRipeti = E.digita("#cp-ripeti", "Lampone!Viola27", tcRipeti + 0.15, { cps: 17, pwd: true, fuoco: [tcRipeti, Infinity] });
-  E.classe("#cp-attuale-box", "attivo", tcAttuale, tcNuova);
-  E.classe("#cp-nuova-box", "attivo", tcNuova, tcRipeti);
+  const fineRipeti = E.digita("#cp-ripeti", "Lampone!Viola27", tcRipeti + 0.15, { cps: 16, pwd: true, fuoco: [tcRipeti, Infinity] });
+  E.classe("#cp-nuova-box", "attivo", 0, tcRipeti);
   E.classe("#cp-ripeti-box", "attivo", tcRipeti);
   const tcSalva = clicca("#cp-salva", Math.max(fineRipeti + 0.35, P("salva", "«Salva».") + 0.1), { da: fineRipeti + 0.05 });
   const tSalvata = tcSalva + 0.35;

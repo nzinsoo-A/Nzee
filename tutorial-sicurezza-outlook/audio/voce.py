@@ -121,7 +121,7 @@ def dividi_sottotitoli(parole):
         testo = " ".join(x["w"] for x in attuale)
         prossima = parole[i + 1]["w"] if i + 1 < len(parole) else None
         fine_frase = p["w"][-1] in ".!?"
-        pausa = p["w"][-1] in ",:;" and len(testo) >= 30
+        pausa = p["w"][-1] in ",:;»" and len(testo) >= 30
         troppo_lungo = prossima is not None and len(testo) + 1 + len(prossima) > 78
         if fine_frase or pausa or troppo_lungo or prossima is None:
             blocchi.append(attuale)
