@@ -1,0 +1,94 @@
+1
+00:00:01,440 --> 00:00:04,610
+Vediamo come mettere in sicurezza
+il tuo account Outlook:
+
+2
+00:00:04,640 --> 00:00:07,510
+nuova e-mail di recupero e nuova password.
+
+3
+00:00:08,982 --> 00:00:13,323
+Vai su outlook.com e accedi con
+la tua e-mail e la tua password.
+
+4
+00:00:17,759 --> 00:00:22,445
+Clicca sulle tue iniziali in alto a destra
+e scegli «Il mio account Microsoft».
+
+5
+00:00:24,237 --> 00:00:26,457
+Nel menu a sinistra apri «Sicurezza»,
+
+6
+00:00:26,487 --> 00:00:29,539
+poi clicca su «Gestisci
+la modalità di accesso».
+
+7
+00:00:31,134 --> 00:00:33,779
+Microsoft vuole essere sicura che sia tu:
+
+8
+00:00:33,809 --> 00:00:37,200
+scegli la tua e-mail di
+recupero e scrivila per intero.
+
+9
+00:00:38,667 --> 00:00:41,455
+Poi inserisci il codice che ti arriva.
+
+10
+00:00:44,225 --> 00:00:47,695
+Ora clicca su «Aggiungere un altro
+modo per accedere all'account»
+
+11
+00:00:47,725 --> 00:00:50,551
+e scegli «Invia un codice tramite e-mail».
+
+12
+00:00:51,032 --> 00:00:55,203
+Scrivi il nuovo indirizzo e
+confermalo con il codice che ricevi.
+
+13
+00:00:58,389 --> 00:00:59,934
+Adesso apri la vecchia e-mail,
+
+14
+00:00:59,964 --> 00:01:02,004
+clicca su «Rimuovi» e conferma.
+
+15
+00:01:02,034 --> 00:01:05,101
+Toglila solo dopo aver
+verificato quella nuova!
+
+16
+00:01:07,082 --> 00:01:10,898
+Infine, torna su «Sicurezza» e
+clicca su «Cambia password».
+
+17
+00:01:11,568 --> 00:01:13,608
+Digita due volte la nuova password,
+
+18
+00:01:13,638 --> 00:01:16,646
+lunga e mai usata altrove,
+e clicca su «Salva».
+
+19
+00:01:20,449 --> 00:01:21,039
+Fatto!
+
+20
+00:01:21,069 --> 00:01:23,194
+Il tuo account ora è più protetto.
+
+21
+00:01:23,224 --> 00:01:27,454
+E ricorda: Microsoft non ti chiederà
+mai la password via e-mail.

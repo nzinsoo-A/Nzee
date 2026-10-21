@@ -194,15 +194,19 @@ def main():
     timeline = {"durata": round(durata_totale, 3), "segmenti": segmenti}
     (BUILD / "timeline.json").write_text(json.dumps(timeline, ensure_ascii=False, indent=1), encoding="utf-8")
 
+    scrivi_srt(segmenti)
+    print(f"Durata totale: {durata_totale:.2f}s")
+
+
+def scrivi_srt(segmenti):
     cue = [c for s in segmenti for c in s["cue"]]
     righe = []
     for n, c in enumerate(cue, 1):
         fine = c["t1"] + 0.35
         if n < len(cue):
-            fine = min(fine, cue[n]["t0"] - 0.02)
+            fine = min(fine, cue[n]["t0"] - 0.08)  # il sottotitolo successivo parte 0,05 s prima della voce
         righe.append(f"{n}\n{ora_srt(c['t0'] - 0.05)} --> {ora_srt(fine)}\n{a_capo(c['testo'])}\n")
     (BUILD / "sottotitoli.srt").write_text("\n".join(righe), encoding="utf-8")
-    print(f"Durata totale: {durata_totale:.2f}s")
 
 
 if __name__ == "__main__":
