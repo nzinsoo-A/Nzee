@@ -212,4 +212,9 @@ def main():
 
 
 if __name__ == "__main__":
+    import argparse
+
+    argomenti = argparse.ArgumentParser()
+    argomenti.add_argument("--build", default=str(BUILD), help="cartella con timeline.json (es. build/mobile)")
+    BUILD = Path(argomenti.parse_args().build)
     main()

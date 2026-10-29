@@ -22,6 +22,7 @@ db = lambda g: 10 ** (g / 20)
 MUSICA_DB = -1.0  # livello della musica quando la voce tace
 ABBASSAMENTO_DB = -11.0  # quanto scende la musica mentre la voce parla
 VOCE_DB = 0.0
+STILE = "computer"
 
 
 def clic_mouse():
@@ -38,6 +39,23 @@ def clic_mouse():
     i = int(0.075 * SR)
     suono[i : i + len(r)] += r
     return suono
+
+
+def tocco():
+    """Tocco sullo schermo del telefono: un «tic» morbido, più discreto del clic del mouse."""
+    t = np.arange(int(0.05 * SR)) / SR
+    rumore = rng.normal(0, 1, len(t))
+    rumore = rumore - np.convolve(rumore, np.ones(10) / 10, mode="same")
+    return db(-25) * (0.5 * rumore * np.exp(-t / 0.003) + 0.6 * np.sin(2 * np.pi * 1750 * t) * np.exp(-t / 0.006))
+
+
+def tasto_tastiera():
+    """Il «tic» della tastiera di iOS, un po' diverso a ogni tasto."""
+    t = np.arange(int(0.03 * SR)) / SR
+    rumore = rng.normal(0, 1, len(t))
+    rumore = rumore - np.convolve(rumore, np.ones(5) / 5, mode="same")
+    tono = rng.uniform(2600, 3400)
+    return db(rng.uniform(-33, -30)) * (0.7 * rumore * np.exp(-t / 0.0018) + 0.35 * np.sin(2 * np.pi * tono * t) * np.exp(-t / 0.0035))
 
 
 def campanella():
@@ -99,8 +117,13 @@ def main():
     musica = musica * guadagno[:, None]
 
     sfx = np.zeros(n)
+    telefono = STILE == "telefono"
     for t in effetti["clic"]:
-        s = clic_mouse()
+        s = tocco() if telefono else clic_mouse()
+        i = int(t * SR)
+        sfx[i : i + len(s)] += s[: max(0, n - i)]
+    for t in effetti.get("tasti", []) if telefono else []:
+        s = tasto_tastiera()
         i = int(t * SR)
         sfx[i : i + len(s)] += s[: max(0, n - i)]
     for t in effetti.get("notifiche", []):
@@ -137,4 +160,11 @@ def normalizza(ingresso, uscita, lufs=-16.0, picco=-1.5):
 
 
 if __name__ == "__main__":
+    import argparse
+
+    argomenti = argparse.ArgumentParser()
+    argomenti.add_argument("--build", default=str(BUILD), help="cartella con voce.wav, musica.wav ed effetti.json")
+    argomenti.add_argument("--stile", choices=["computer", "telefono"], default="computer", help="suoni di clic e tastiera")
+    args = argomenti.parse_args()
+    BUILD, STILE = Path(args.build), args.stile
     main()

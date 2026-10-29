@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>Proteggi il tuo account Outlook dal telefono</title>
+<link rel="stylesheet" href="stile.css">
+<link rel="stylesheet" href="pagine.css">
+<script src="../video/icone.js"></script>
+<script src="pagine.js"></script>
+</head>
+<body>
+<div id="palco">
+  <div id="cornice">
+    <div id="camera">
+      <div id="telefono">
+        <div id="schermo">
+          <div id="vista"></div>
+          <div id="stato">
+            <span class="ora">9:41</span>
+            <span class="icone">
+              <svg width="19" height="12" viewBox="0 0 19 12"><rect x="0" y="8" width="3.2" height="4" rx=".8" fill="#111"/><rect x="5" y="5.5" width="3.2" height="6.5" rx=".8" fill="#111"/><rect x="10" y="3" width="3.2" height="9" rx=".8" fill="#111"/><rect x="15" y="0" width="3.2" height="12" rx=".8" fill="#111"/></svg>
+              <svg width="17" height="12" viewBox="0 0 17 12"><path d="M8.5 2.2c2.4 0 4.6.9 6.3 2.5l1.2-1.2C14 1.5 11.4.4 8.5.4S3 1.5 1 3.5l1.2 1.2C3.9 3.1 6.1 2.2 8.5 2.2zm0 3.4c1.5 0 2.8.5 3.9 1.5l1.2-1.2C12.2 4.6 10.4 3.8 8.5 3.8s-3.7.8-5.1 2.1l1.2 1.2c1.1-1 2.4-1.5 3.9-1.5zm0 3.4c.6 0 1.2.2 1.6.6L8.5 11.2 6.9 9.6c.4-.4 1-.6 1.6-.6z" fill="#111"/></svg>
+              <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.8" fill="none" stroke="#111" stroke-opacity=".4"/><rect x="2" y="2" width="16.5" height="9" rx="2.5" fill="#111"/><path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2z" fill="#111" fill-opacity=".45"/></svg>
+            </span>
+          </div>
+          <div id="isola"></div>
+          <div id="notifica">
+            <span class="app"><i class="ic" data-ic="mail_20_filled"></i></span>
+            <span style="flex:1">
+              <div class="riga1">Mail<span>ora</span></div>
+              <div class="testo"><b style="font-weight:600;letter-spacing:0">Codice di sicurezza dell'account Microsoft</b><br>Il tuo codice di sicurezza è <b id="notifica-codice"></b></div>
+            </span>
+          </div>
+          <div id="safari">
+            <span class="vetro" id="s-indietro"><i class="ic" data-ic="chevron_left_24_regular"></i></span>
+            <span class="vetro" id="s-indirizzo"><i class="ic" data-ic="text_align_left_24_regular"></i><span class="dom" id="s-dominio"></span><i class="ic" data-ic="arrow_clockwise_24_regular"></i><span id="s-carica"></span></span>
+            <span class="vetro" id="s-schede"><i class="ic" data-ic="square_multiple_24_regular"></i></span>
+          </div>
+          <div id="s-modifica">
+            <span class="campo-url"><i class="ic" data-ic="search_24_regular"></i><span id="s-testo-url"></span></span>
+            <span class="annulla">Annulla</span>
+          </div>
+          <div id="tastiera">
+            <div id="t-accessorio"><span class="frecce"><i class="ic" data-ic="chevron_up_20_regular"></i><i class="ic" data-ic="chevron_down_20_regular"></i></span><span class="fine">Fine</span></div>
+            <div id="t-suggerimenti"></div>
+            <div id="t-tasti"><div id="t-bolla"></div></div>
+            <div id="t-fondo"><i class="ic" data-ic="globe_24_regular"></i><i class="ic" data-ic="mic_24_regular"></i></div>
+          </div>
+          <div id="indicatore-home"></div>
+        </div>
+      </div>
+      <div id="strato-tocco">
+        <svg id="scia"><path d="" stroke="rgba(255,255,255,.55)" stroke-width="22" stroke-linecap="round" fill="none"/></svg>
+        <div id="dito"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="fascia">
+    <div id="capitolo"></div>
+    <div id="sottotitolo"></div>
+  </div>
+
+  <div id="titolo" class="cartello">
+    <svg class="scudo" viewBox="0 0 120 120">
+      <defs><linearGradient id="gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4ba0f0"/><stop offset="1" stop-color="#0f6cbd"/></linearGradient></defs>
+      <path d="M60 6 L104 22 V56 C104 84 86 104 60 114 C34 104 16 84 16 56 V22 Z" fill="url(#gs)"/>
+      <path d="M40 60 L54 74 L82 44" stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h1>Proteggi il tuo account <span>Outlook</span></h1>
+    <div class="sotto">Nuova e-mail di recupero e nuova password, passo dopo passo</div>
+    <div class="telefonino"><i class="ic" data-ic="phone_20_regular"></i>Dal browser del telefono</div>
+    <div class="nota">Dati di esempio · le schermate possono variare nel tempo</div>
+  </div>
+
+  <div id="chiusura" class="cartello">
+    <h1 id="fine-titolo">Fatto!</h1>
+    <div class="lista">
+      <div class="voce" id="fine-1"><span class="spunta"><svg viewBox="0 0 30 30"><path d="M7 15.5 L12.5 21 L23 9.5" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Nuova e-mail verificata</div>
+      <div class="voce" id="fine-2"><span class="spunta"><svg viewBox="0 0 30 30"><path d="M7 15.5 L12.5 21 L23 9.5" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Vecchia e-mail rimossa</div>
+      <div class="voce" id="fine-3"><span class="spunta"><svg viewBox="0 0 30 30"><path d="M7 15.5 L12.5 21 L23 9.5" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Password cambiata</div>
+    </div>
+    <div class="consiglio" id="fine-consiglio">⚠ Microsoft non ti chiede mai<br>la password via e-mail</div>
+  </div>
+  <div id="nero"></div>
+</div>
+<script src="motore.js"></script>
+<script src="scene.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+/* Versione per telefono: palco verticale 1080×1920, iPhone con Safari al centro, fascia dei sottotitoli in basso. */
+
+@font-face { font-family: "Selawik"; src: url(../video/font/selawkl.woff2) format("woff2"); font-weight: 300; }
+@font-face { font-family: "Selawik"; src: url(../video/font/selawksl.woff2) format("woff2"); font-weight: 350; }
+@font-face { font-family: "Selawik"; src: url(../video/font/selawk.woff2) format("woff2"); font-weight: 400; }
+@font-face { font-family: "Selawik"; src: url(../video/font/selawksb.woff2) format("woff2"); font-weight: 600; }
+@font-face { font-family: "Selawik"; src: url(../video/font/selawkb.woff2) format("woff2"); font-weight: 700; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: #0c0e13; }
+body { -webkit-font-smoothing: antialiased; }
+.ic { display: inline-flex; width: 20px; height: 20px; flex: none; }
+.ic svg { width: 100%; height: 100%; display: block; }
+
+#palco {
+  position: relative; width: 1080px; height: 1920px; overflow: hidden; color: #1b1b1b;
+  background: radial-gradient(900px 700px at 20% 15%, #18325a 0%, rgba(24,50,90,0) 60%),
+              radial-gradient(800px 700px at 85% 75%, #33244f 0%, rgba(51,36,79,0) 60%), #0c0e13;
+  font-family: "Selawik", "Segoe UI", sans-serif;
+}
+
+/* ---------- Telefono (con la «telecamera» che zooma) ---------- */
+#cornice { position: absolute; left: 0; top: 0; width: 1080px; height: 1612px; overflow: hidden; }
+#camera { position: absolute; left: 0; top: 0; width: 1080px; height: 1612px; transform-origin: 0 0; }
+#telefono {
+  position: absolute; left: 167px; top: 22px; width: 746px; height: 1572px; border-radius: 112px;
+  background: linear-gradient(145deg, #3a3b3f, #1a1b1e 45%, #2c2d31); padding: 18px;
+  box-shadow: 0 0 0 2px #55575d, 0 30px 80px rgba(0,0,0,.55), inset 0 0 0 2px #0d0d0f;
+}
+#schermo {
+  position: relative; width: 390px; height: 844px; zoom: 1.82; border-radius: 52px; overflow: hidden; background: #fff;
+  font-family: "Selawik", "Segoe UI", sans-serif; color: #1b1b1b;
+}
+#vista { position: absolute; left: 0; top: 54px; width: 390px; height: 790px; overflow: hidden; background: #fff; }
+.pagina { position: absolute; inset: 0; overflow: hidden; visibility: hidden; opacity: 0; background: #fff; }
+.pagina > .contenuto { position: absolute; left: 0; top: 0; width: 390px; }
+
+/* barra di stato di iOS */
+#stato { position: absolute; left: 0; top: 0; width: 390px; height: 54px; z-index: 30; background: #fff; font-family: "Inter", sans-serif; }
+#stato .ora { position: absolute; left: 50px; top: 17px; font-size: 17px; font-weight: 600; letter-spacing: -.2px; }
+#stato .icone { position: absolute; right: 30px; top: 19px; display: flex; gap: 6px; align-items: center; }
+#isola { position: absolute; left: 132px; top: 11px; width: 126px; height: 37px; border-radius: 19px; background: #000; z-index: 40; }
+#indicatore-home { position: absolute; left: 128px; bottom: 8px; width: 134px; height: 5px; border-radius: 3px; background: #111; z-index: 40; }
+
+/* ---------- Safari (barra in basso, stile iOS 26) ---------- */
+#safari { position: absolute; left: 0; right: 0; bottom: 0; height: 96px; z-index: 20; font-family: "Inter", sans-serif;
+  background: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,.96) 30%); }
+.vetro { position: absolute; top: 18px; height: 50px; background: rgba(255,255,255,.92); border-radius: 25px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.10), 0 0 0 .7px rgba(0,0,0,.09); display: flex; align-items: center; justify-content: center; color: #1c1c1e; }
+#s-indietro { left: 32px; width: 50px; }
+#s-schede { right: 32px; width: 50px; }
+#s-indirizzo { left: 92px; right: 92px; justify-content: space-between; padding: 0 16px; overflow: hidden; }
+#s-indirizzo .dom { font-size: 16.5px; font-weight: 500; letter-spacing: -.2px; white-space: nowrap; }
+#s-indirizzo .ic, .vetro .ic { width: 22px; height: 22px; }
+#s-carica { position: absolute; left: 0; bottom: 0; height: 2.5px; background: #0a84ff; width: 0; }
+
+/* barra dell'indirizzo mentre si scrive (sopra la tastiera) */
+#s-modifica { position: absolute; left: 0; right: 0; z-index: 26; height: 66px; background: #f2f2f7; display: flex; align-items: center; gap: 10px;
+  padding: 0 12px; visibility: hidden; font-family: "Inter", sans-serif; }
+#s-modifica .campo-url { flex: 1; height: 44px; border-radius: 22px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.1);
+  display: flex; align-items: center; gap: 8px; padding: 0 14px; font-size: 16.5px; }
+#s-modifica .campo-url .ic { width: 18px; height: 18px; color: #8e8e93; }
+#s-modifica .annulla { font-size: 16.5px; color: #0a84ff; }
+.sel-url { background: #b4d5fe; }
+
+/* ---------- Tastiera di iOS ---------- */
+#tastiera { position: absolute; left: 0; right: 0; bottom: 0; height: 336px; z-index: 25; background: #d4d6dc; font-family: "Inter", sans-serif;
+  transform: translateY(100%); }
+#t-accessorio { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background: #f6f6f8; border-bottom: .5px solid #c3c4c8; }
+#t-accessorio .frecce { display: flex; gap: 22px; color: #0a84ff; }
+#t-accessorio .frecce .ic { width: 22px; height: 22px; }
+#t-accessorio .fine { color: #0a84ff; font-weight: 600; font-size: 16.5px; }
+#t-suggerimenti { height: 40px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #1c1c1e; gap: 0; }
+#t-suggerimenti span { flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 6px; }
+#t-suggerimenti span + span { border-left: 1px solid #b9bbc1; }
+#t-suggerimenti .forte { font-weight: 600; }
+#t-suggerimenti .piccolo { display: block; font-size: 11.5px; color: #6c6c70; font-weight: 400; }
+#t-tasti { position: relative; height: 212px; }
+.tasto { position: absolute; height: 43px; border-radius: 8px; background: #fff; box-shadow: 0 1px 0 #8a8b90; display: grid; place-items: center;
+  font-size: 22.5px; color: #111; }
+.tasto.spec { background: #abb0bb; font-size: 16px; }
+.tasto.blu { background: #0a84ff; color: #fff; font-size: 16px; }
+.tasto.premuto { background: #c9ccd3; }
+.tasto.spec.premuto, .tasto.blu.premuto { background: #8e939e; }
+.tasto .ic { width: 22px; height: 22px; }
+.tasto .lettere { display: block; font-size: 9.5px; letter-spacing: 1.5px; margin-top: -4px; font-weight: 600; }
+.tasto.num { flex-direction: column; line-height: 1.05; font-size: 24px; }
+#t-bolla { position: absolute; width: 50px; height: 58px; border-radius: 10px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  display: grid; place-items: center; font-size: 32px; visibility: hidden; z-index: 3; }
+#t-fondo { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; display: flex; justify-content: space-between; padding: 6px 30px 0; color: #55565b; }
+#t-fondo .ic { width: 26px; height: 26px; }
+
+/* ---------- Tocco del dito (in coordinate della telecamera, fuori dallo schermo ingrandito) ---------- */
+#strato-tocco { position: absolute; left: 0; top: 0; width: 1080px; height: 1612px; z-index: 50; pointer-events: none; }
+#dito { position: absolute; width: 84px; height: 84px; margin: -42px 0 0 -42px; border-radius: 50%; background: rgba(60,60,67,.30);
+  border: 4px solid rgba(255,255,255,.95); box-shadow: 0 3px 16px rgba(0,0,0,.35); opacity: 0; }
+.onda { position: absolute; width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 50%; border: 6px solid #ffb900;
+  background: rgba(255,185,0,.28); opacity: 0; }
+#scia { position: absolute; left: 0; top: 0; width: 1080px; height: 1612px; opacity: 0; overflow: visible; }
+
+/* ---------- Notifica di iOS ---------- */
+#notifica { position: absolute; left: 9px; right: 9px; top: 0; z-index: 45; border-radius: 24px; padding: 13px 14px; display: flex; gap: 11px;
+  background: rgba(246,246,248,.97); box-shadow: 0 10px 30px rgba(0,0,0,.22); font-family: "Inter", sans-serif; visibility: hidden; }
+#notifica .app { width: 38px; height: 38px; border-radius: 9px; background: linear-gradient(#3aa0ff, #0a6ce0); display: grid; place-items: center; flex: none; color: #fff; }
+#notifica .app .ic { width: 24px; height: 24px; }
+#notifica .riga1 { display: flex; justify-content: space-between; font-size: 15px; font-weight: 600; }
+#notifica .riga1 span { font-weight: 400; color: #6c6c70; font-size: 14px; }
+#notifica .testo { font-size: 15px; line-height: 1.3; }
+#notifica .testo b { font-weight: 700; letter-spacing: .5px; }
+
+/* ---------- Fascia in basso: capitolo e sottotitoli ---------- */
+#fascia { position: absolute; left: 0; top: 1612px; width: 1080px; height: 308px; font-family: "Inter", sans-serif;
+  background: linear-gradient(rgba(12,14,19,0), #0c0e13 18%); }
+#capitolo { position: absolute; left: 0; right: 0; top: 14px; display: flex; justify-content: center; opacity: 0; }
+#capitolo .pillola { display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 24px 0 8px; border-radius: 27px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); color: #e9edf5; font-size: 27px; font-weight: 600; }
+#capitolo .num { height: 40px; min-width: 64px; padding: 0 12px; border-radius: 20px; background: #0f6cbd; color: #fff; display: grid; place-items: center; font-size: 22px; font-weight: 700; }
+#sottotitolo { position: absolute; left: 50px; right: 50px; top: 92px; height: 196px; display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 48px; font-weight: 700; line-height: 1.22; text-align: center; text-wrap: balance; opacity: 0; letter-spacing: -.3px; }
+#sottotitolo .ui { color: #ffd257; }
+
+/* ---------- Cartelli iniziale e finale ---------- */
+.cartello { position: absolute; left: 0; top: 0; width: 1080px; height: 1612px; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; font-family: "Inter", sans-serif; color: #fff; opacity: 0; visibility: hidden; z-index: 60; padding: 0 70px;
+  background: radial-gradient(900px 700px at 25% 20%, #1d3a66 0%, rgba(29,58,102,0) 62%),
+              radial-gradient(800px 700px at 80% 85%, #3b2a5c 0%, rgba(59,42,92,0) 60%), #0c0e13; }
+.cartello .scudo { width: 190px; height: 190px; margin-bottom: 54px; }
+.cartello h1 { font-size: 104px; font-weight: 800; letter-spacing: -2.5px; text-align: center; line-height: 1.02; }
+.cartello h1 span { color: #4ba0f0; }
+.cartello .sotto { margin-top: 36px; font-size: 44px; font-weight: 500; color: #c6d0e0; text-align: center; line-height: 1.25; }
+.cartello .telefonino { margin-top: 52px; display: flex; align-items: center; gap: 16px; font-size: 34px; color: #9fb3d1; font-weight: 600; }
+.cartello .telefonino .ic { width: 40px; height: 40px; }
+.cartello .nota { position: absolute; bottom: 40px; font-size: 26px; color: #8a96aa; }
+.cartello .lista { display: flex; flex-direction: column; gap: 34px; margin-top: 46px; }
+.cartello .voce { display: flex; align-items: center; gap: 28px; font-size: 52px; font-weight: 600; }
+.cartello .spunta { width: 70px; height: 70px; border-radius: 50%; background: #13a10e; display: grid; place-items: center; flex: none; }
+.cartello .spunta svg { width: 40px; height: 40px; }
+.cartello .consiglio { margin-top: 70px; padding: 26px 34px; border-radius: 20px; background: rgba(255,185,0,.12); border: 1px solid rgba(255,185,0,.45);
+  color: #ffd257; font-size: 40px; font-weight: 600; text-align: center; line-height: 1.25; }
+#nero { position: absolute; inset: 0; background: #000; opacity: 0; z-index: 90; pointer-events: none; }

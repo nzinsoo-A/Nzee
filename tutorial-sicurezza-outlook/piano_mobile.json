@@ -1,0 +1,87 @@
+{
+  "motore": "supertonic",
+  "voce": 2,
+  "velocita": 1.05,
+  "passi": 24,
+  "riferimento": {
+    "voce": "if_sara",
+    "velocita": 1.0
+  },
+  "caratteri_sottotitolo": 70,
+  "coda": 3.0,
+  "segmenti": [
+    {
+      "id": "intro",
+      "pausa_prima": 1.0,
+      "testo": "Vediamo come mettere in sicurezza il tuo account {Outlook|àutluk} dal telefono: nuova {e-mail|imèil} di recupero e nuova password.",
+      "pausa_dopo": 0.8
+    },
+    {
+      "id": "accesso",
+      "pausa_prima": 0.4,
+      "testo": "Apri il browser, vai su {outlook.com|àutluk punto com} e accedi con la tua {e-mail|imèil} e la tua password.",
+      "pausa_dopo": 5.6
+    },
+    {
+      "id": "account",
+      "pausa_prima": 0.3,
+      "testo": "Tocca le {tue|tùe} {iniziali|iniziàli} in alto a destra e {scegli|scégli} «Il mio account Microsoft».",
+      "pausa_dopo": 1.4
+    },
+    {
+      "id": "sicurezza",
+      "pausa_prima": 0.3,
+      "testo": "Tocca il menu e {scegli|scégli} «Sicurezza». Poi, più in basso, tocca «Gestisci la modalità di accesso».",
+      "pausa_dopo": 1.4
+    },
+    {
+      "id": "verifica",
+      "pausa_prima": 0.3,
+      "testo": "Microsoft vuole essere sicura che sia tu: {scegli|scégli} la tua {e-mail|imèil} di recupero e scrivila per intero.",
+      "pausa_dopo": 2.4
+    },
+    {
+      "id": "codice",
+      "pausa_prima": 0.0,
+      "testo": "Poi inserisci il codice che ti arriva.",
+      "pausa_dopo": 2.4
+    },
+    {
+      "id": "aggiungi",
+      "pausa_prima": 0.4,
+      "testo": "Ora tocca «Aggiungere un altro modo per accedere all'account», poi «Invia un codice tramite {e-mail|imèil}».",
+      "pausa_dopo": 0.6
+    },
+    {
+      "id": "nuova",
+      "pausa_prima": 0.0,
+      "testo": "Scrivi il nuovo indirizzo e confermalo con il codice che ricevi.",
+      "pausa_dopo": 4.4
+    },
+    {
+      "id": "rimuovi",
+      "pausa_prima": 0.3,
+      "testo": "Adesso apri la vecchia {e-mail|imèil}, tocca «Rimuovi» e conferma. Toglila solo dopo aver verificato quella nuova!",
+      "pausa_dopo": 1.2
+    },
+    {
+      "id": "password",
+      "pausa_prima": 0.3,
+      "testo": "Infine, dal menu torna su «Sicurezza», poi {tocca|tòcca} «Cambia password».",
+      "pausa_dopo": 0.8
+    },
+    {
+      "id": "salva",
+      "pausa_prima": 0.0,
+      "testo": "Digita due volte la nuova password: lunga, mai usata altrove. Poi tocca «Salva».",
+      "pausa_dopo": 2.8
+    },
+    {
+      "id": "fine",
+      "pausa_prima": 0.8,
+      "testo": "Fatto! Il tuo account ora è più protetto. E ricorda: Microsoft non ti {chiede|kiède} mai la password via {e-mail|imèil}.",
+      "pausa_dopo": 0.0
+    }
+  ],
+  "candidati": 6
+}

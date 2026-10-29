@@ -17,16 +17,19 @@ try {
   playwright = require(path.join(process.env.PLAYWRIGHT_GLOBAL || "/opt/node22/lib/node_modules", "playwright"));
 }
 
-const QUI = path.dirname(fileURLToPath(import.meta.url));
-const BUILD = path.join(QUI, "..", "build");
+const RADICE = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const arg = (nome, predefinito) => {
   const i = process.argv.indexOf(nome);
   return i >= 0 ? process.argv[i + 1] : predefinito;
 };
+// --sorgente video (16:9, computer) oppure --sorgente mobile (9:16, telefono)
+const QUI = path.join(RADICE, arg("--sorgente", "video"));
+const BUILD = path.resolve(RADICE, arg("--build", "build"));
+const [LARGH, ALT] = arg("--formato", "1920x1080").split("x").map(Number);
 const timeline = JSON.parse(fs.readFileSync(path.join(BUILD, "timeline.json"), "utf8"));
 
 async function apriPagina(browser) {
-  const pagina = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+  const pagina = await browser.newPage({ viewport: { width: LARGH, height: ALT }, deviceScaleFactor: 1 });
   const errori = [];
   pagina.on("pageerror", e => errori.push(e.message));
   pagina.on("console", m => { if (m.type() === "error") errori.push(m.text()); });
@@ -57,7 +60,7 @@ try {
       await fotogramma(pagina, t, file);
       console.log(file);
     }
-    fs.writeFileSync(path.join(BUILD, "effetti.json"), JSON.stringify({ clic: info.clic, notifiche: info.notifiche }));
+    fs.writeFileSync(path.join(BUILD, "effetti.json"), JSON.stringify({ clic: info.clic, notifiche: info.notifiche, tasti: info.tasti }));
     console.log(`durata ${info.durata}s, ${info.clic.length} clic`);
   } else if (process.argv.includes("--video")) {
     const fps = Number(arg("--fps", 30));
@@ -66,8 +69,8 @@ try {
     fs.rmSync(cartella, { recursive: true, force: true });
     fs.mkdirSync(cartella, { recursive: true });
     const aperte = await Promise.all(Array.from({ length: processi }, () => apriPagina(browser)));
-    const { durata, clic, notifiche } = aperte[0].info;
-    fs.writeFileSync(path.join(BUILD, "effetti.json"), JSON.stringify({ clic, notifiche }));
+    const { durata, clic, notifiche, tasti } = aperte[0].info;
+    fs.writeFileSync(path.join(BUILD, "effetti.json"), JSON.stringify({ clic, notifiche, tasti }));
     const totale = Math.ceil(durata * fps);
     let prossimo = 0, fatti = 0;
     const inizio = Date.now();
